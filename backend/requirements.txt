@@ -1,0 +1,21 @@
+# gmux backend Python dependencies
+#
+# The CORE monitor (backend/status/monitor.py) runs on the Python STANDARD
+# LIBRARY alone. The only thing it benefits from is psutil, for live
+# RAM/CPU/uptime/children metrics — without it the monitor still runs and still
+# feeds agent/folder/file data to the Agent Monitor; those metrics just show 0.
+#
+# Install:  python3.11 -m pip install -r backend/requirements.txt
+# (or:      pip3.11 install --user -r backend/requirements.txt)
+
+# ── Required for the full status experience (live process metrics) ──────────
+psutil>=5.9
+
+# ── Optional: voice daemon (backend/voice/) ─────────────────────────────────
+# Only needed if you want push-to-talk voice. The launcher auto-skips voice if
+# these aren't installed, so they're safe to leave out on first setup.
+# Uncomment to enable voice:
+# faster-whisper>=1.0
+# sounddevice>=0.4
+# numpy>=1.24
+# websockets>=12.0

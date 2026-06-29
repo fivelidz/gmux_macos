@@ -55,26 +55,32 @@ checks — see `docs/MACOS_PORTING.md` for the full list of patches). It has
 
 ## 2. Prerequisites (install these first)
 
+> **gmux is standalone.** It does NOT need Ghostty, qalcode2, or any tool from
+> the `tooling/` folder. Everything gmux needs is below + this repo's own
+> `backend/`. (The `tooling/` extras are unrelated companion apps — skip them
+> unless explicitly asked.)
+
 ```bash
 # Homebrew (if not present): https://brew.sh
-# Then:
+# Then — the only system deps gmux needs:
 brew install python@3.11 node git
 # tmux is NOT required for v4 (PTY engine replaces it) but harmless to have:
 brew install tmux
 
-# Python deps for the backend sidecars:
-pip3.11 install --user psutil websockets
-
-# Optional — only needed for the voice daemon (Phase 3):
-pip3.11 install --user faster-whisper sounddevice numpy
+# Python deps for gmux's OWN backend (this repo's backend/ folder).
+# Core need is psutil — the monitor runs without it but RAM/CPU show 0.
+pip3.11 install --user -r backend/requirements.txt
 
 # Rust toolchain (needed for Phase 2 — the Tauri app):
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source "$HOME/.cargo/env"
 ```
 
+> Voice is optional and off by default. To enable it later, uncomment the voice
+> lines in `backend/requirements.txt` and re-run the pip command.
+
 ✅ **Checkpoint 0:** `python3.11 --version`, `node --version`, `cargo --version`
-all succeed.
+all succeed, and `python3.11 -c "import psutil"` works.
 
 ---
 
@@ -107,10 +113,12 @@ curl -s http://localhost:8769/api/files     # -> JSON folder/file feed
 > Patch 7). If port discovery fails, check that fallback is being taken
 > (`uname -s` should be `Darwin`).
 
-> **Agent Monitor "no folders" note:** the folder tree is built from the *last
-> hour* of agent tool activity. If no AI agents are actively touching files,
-> the folder view is legitimately empty — that is not a bug. Start an agent and
-> have it Read/Edit a file to see folders populate.
+> **Agent Monitor "empty / no folders" note:** the folder tree is built from the
+> *last hour* of agent tool activity. If no AI agents are actively touching files,
+> the view is legitimately empty — that is **not** a bug, and (as of the demo-
+> substitution fix) the app correctly shows an empty "waiting for data" canvas
+> instead of fabricating fake sample agents. Start an agent and have it Read/Edit
+> a file to see folders populate. See `docs/TAURI_APP_STATUS.md` §3a.
 
 ✅ **Checkpoint 1:** `curl http://localhost:8769/api/state` returns JSON and the
 browser UI loads without console errors. Record results in

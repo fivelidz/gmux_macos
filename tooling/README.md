@@ -1,32 +1,53 @@
 # tooling/ — companion tools for the gmux macOS setup
 
-This folder bundles the **other tools fivelidz uses alongside gmux**, with
-install instructions written for a **Claude coding agent** to follow on macOS.
-All referenced repos are **public**.
+This folder bundles **optional companion tools** fivelidz uses alongside gmux,
+with install instructions for a **Claude coding agent** on macOS. All referenced
+repos are **public**.
 
-Recommended install order:
+> ## ⚠️ Read this first — these are NOT dependencies of gmux
+>
+> **The gmux Tauri app is standalone.** It does NOT need Ghostty, qalcode2, or
+> QTK to build or run. gmux ships its own Python backend (`backend/`) and its own
+> Tauri/Rust app — that's all it needs.
+>
+> - **If your only goal is to get the gmux app working → ignore this whole
+>   folder and go straight to [`../MACOS_AGENT_SETUP.md`](../MACOS_AGENT_SETUP.md).**
+> - The tools below are just nice extras fivelidz runs in his own workflow:
+>   - **Ghostty** — a terminal emulator (any terminal works; gmux doesn't require it)
+>   - **qalcode2** — a separate AI coding-agent CLI (unrelated to the gmux app)
+>   - **QTK** — a plugin for qalcode2 (not for gmux)
+>
+> Install them only if fivelidz specifically asked for them. They can be set up
+> before, after, or completely independently of gmux.
 
-| # | Tool | What it is | Guide | Public repo |
-|---|------|-----------|-------|-------------|
-| 1 | **Ghostty** | Fast GPU terminal — the host you run everything in | [`ghostty/`](ghostty/INSTALL_FOR_CLAUDE.md) | github.com/ghostty-org/ghostty |
-| 2 | **qalcode** | fivelidz's OpenCode fork (the AI coding agent CLI) + his settings | [`qalcode2/`](qalcode2/INSTALL_FOR_CLAUDE.md) | github.com/fivelidz/qalcode-share |
-| 3 | **QTK** *(optional)* | OpenCode plugin that compresses tool output to save tokens | [`qtk/`](qtk/INSTALL_FOR_CLAUDE.md) | github.com/qalarc/QTK |
-| 4 | **gmux** | The terminal multiplexer / agent operations centre (this whole repo) | [`../MACOS_AGENT_SETUP.md`](../MACOS_AGENT_SETUP.md) | this repo |
+---
+
+## The two are independent
+
+| | What it is | Needs the others? | Guide |
+|---|---|---|---|
+| **gmux app** | The terminal multiplexer / agent ops centre (this repo) | **No** — standalone | [`../MACOS_AGENT_SETUP.md`](../MACOS_AGENT_SETUP.md) |
+| Ghostty | Fast GPU terminal emulator | No | [`ghostty/`](ghostty/INSTALL_FOR_CLAUDE.md) |
+| qalcode2 | fivelidz's OpenCode fork (AI coding CLI) + his settings | No | [`qalcode2/`](qalcode2/INSTALL_FOR_CLAUDE.md) |
+| QTK *(optional)* | Token-compression plugin **for qalcode2** | qalcode2 only | [`qtk/`](qtk/INSTALL_FOR_CLAUDE.md) |
+
+Public repos: gmux (this repo) · Ghostty `github.com/ghostty-org/ghostty` ·
+qalcode `github.com/fivelidz/qalcode-share` · QTK `github.com/qalarc/QTK`.
 
 ---
 
 ## Agent: do this
 
-1. **Install Ghostty** → [`ghostty/INSTALL_FOR_CLAUDE.md`](ghostty/INSTALL_FOR_CLAUDE.md)
-   (one `brew install --cask ghostty`). Run the rest inside a Ghostty window.
-2. **Install qalcode + apply settings** → [`qalcode2/INSTALL_FOR_CLAUDE.md`](qalcode2/INSTALL_FOR_CLAUDE.md).
-   Uses the public `qalcode-share` installer with `--skip-deps` for macOS. The
-   settings in `qalcode2/settings/` are a *sanitised, portable* copy of
-   fivelidz's config (machine-specific MCP servers removed, with notes).
-3. **(Optional) Install QTK plugin** → [`qtk/INSTALL_FOR_CLAUDE.md`](qtk/INSTALL_FOR_CLAUDE.md)
-   (`bun add @qalarc/qtk-plugin`, then flip the `plugin` line in the config).
-4. **Get gmux running** → [`../MACOS_AGENT_SETUP.md`](../MACOS_AGENT_SETUP.md)
-   (the main task for this repo).
+**Primary task — the gmux app (no companion tools required):**
+→ [`../MACOS_AGENT_SETUP.md`](../MACOS_AGENT_SETUP.md)
+
+**Only if fivelidz asked for the companion tools** (order doesn't matter; they're
+independent of gmux):
+- **Ghostty** → [`ghostty/INSTALL_FOR_CLAUDE.md`](ghostty/INSTALL_FOR_CLAUDE.md)
+  (one `brew install --cask ghostty`).
+- **qalcode2 + settings** → [`qalcode2/INSTALL_FOR_CLAUDE.md`](qalcode2/INSTALL_FOR_CLAUDE.md)
+  (public `qalcode-share` installer with `--skip-deps`).
+- **QTK plugin for qalcode2** *(optional)* → [`qtk/INSTALL_FOR_CLAUDE.md`](qtk/INSTALL_FOR_CLAUDE.md).
 
 Each guide has ✅ checkpoints and ⚠️ "stop and ask the human" points
 (authentication, anything destructive). Honour them.

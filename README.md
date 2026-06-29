@@ -8,9 +8,10 @@
 > **Is this a real app or a demo?** → [`docs/TAURI_APP_STATUS.md`](docs/TAURI_APP_STATUS.md)
 > (it's the real app — that note explains the build steps so it doesn't *look* like a demo).
 >
-> **Companion tools** (Ghostty terminal + qalcode AI CLI + QTK plugin +
-> fivelidz's settings), each with its own agent install guide →
-> [`tooling/`](tooling/README.md). All referenced repos are public.
+> **Optional companion tools** (Ghostty, qalcode2, QTK) live in
+> [`tooling/`](tooling/README.md). They are **NOT required** to build or run the
+> gmux app — gmux is standalone with its own Python backend. Install them only if
+> asked.
 
 ---
 
