@@ -25,6 +25,15 @@ port_in_use() {
   lsof -i :"$1" >/dev/null 2>&1
 }
 
+# ── Python picker ─────────────────────────────────────────────────────────────
+# macOS often ships only `python3` (e.g. 3.14), not `python3.11`. The backend is
+# stdlib + psutil, so any 3.10+ works.
+PY=""
+for _c in python3.11 python3.12 python3.13 python3.10 python3; do
+  if command -v "$_c" >/dev/null 2>&1; then PY="$_c"; break; fi
+done
+[ -n "$PY" ] || { echo "  ✗ no python3 found in PATH"; exit 1; }
+
 echo ""
 echo "  ██████╗ ███╗   ███╗██╗   ██╗██╗  ██╗"
 echo "  ██╔════╝████╗ ████║██║   ██║╚██╗██╔╝"
@@ -54,7 +63,7 @@ elif port_in_use 8769; then
   echo "  ✓ monitor    :8769 already bound"
 else
   echo "  ↻ monitor    starting on :8769..."
-  python3.11 "$BACKEND/status/monitor.py" &>/tmp/gmux-monitor.log &
+  "$PY" "$BACKEND/status/monitor.py" &>/tmp/gmux-monitor.log &
   echo "              PID $!  log: /tmp/gmux-monitor.log"
 fi
 
@@ -64,7 +73,7 @@ if port_in_use 8770; then
 else
   MODEL_PATH="$SYSTEM_DIR/models/hand_landmarker.task"
   echo "  ↻ voice      starting faster-whisper on ws://localhost:8770..."
-  python3.11 "$BACKEND/voice/gmux_voice_daemon.py" \
+  "$PY" "$BACKEND/voice/gmux_voice_daemon.py" \
     --model tiny --port 8770 --lang en \
     &>/tmp/gmux-voice.log &
   echo "              PID $!  log: /tmp/gmux-voice.log"
@@ -77,7 +86,7 @@ if $BROWSER_ONLY; then
   PORT=5550
   pkill -f "http.server $PORT" 2>/dev/null || true
   sleep 0.3
-  python3 -m http.server $PORT --directory "$SYSTEM_DIR" &>/tmp/gmux-http.log &
+  "$PY" -m http.server $PORT --directory "$SYSTEM_DIR" &>/tmp/gmux-http.log &
   HTTP_PID=$!
   sleep 1
   URL="http://localhost:$PORT/ui/v3/index.html"

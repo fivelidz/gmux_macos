@@ -55,6 +55,14 @@ checks — see `docs/MACOS_PORTING.md` for the full list of patches). It has
 
 ## 2. Prerequisites (install these first)
 
+> **⚡ Shortcut:** there is now a one-command bootstrap that does the survey +
+> install + Phase 1 for you, with all the macOS traps already handled:
+> ```bash
+> bash scripts/macos-bootstrap.sh --terminal   # (--check to survey only, --app to build the desktop app)
+> ```
+> See [`docs/MACOS_RUNBOOK.md`](docs/MACOS_RUNBOOK.md) for the smooth path and the
+> table of known traps. The manual steps below still work if you prefer them.
+
 > **gmux is standalone.** It does NOT need Ghostty, qalcode2, or any tool from
 > the `tooling/` folder. Everything gmux needs is below + this repo's own
 > `backend/`. (The `tooling/` extras are unrelated companion apps — skip them

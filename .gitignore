@@ -4,6 +4,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+# package-lock.json is intentionally NOT committed: it pins per-OS native
+# binaries (esbuild/rollup/rolldown/swc *-linux-* vs *-darwin-*). A lockfile
+# generated on Linux breaks `npm install` on macOS (missing @esbuild/darwin-*).
+# Letting npm regenerate it per-machine resolves the correct platform binaries.
+# See docs/VM_REPORTS/macos-install-log.md "Lesson #7".
+package-lock.json
+**/package-lock.json
 
 # Build output
 dist/
