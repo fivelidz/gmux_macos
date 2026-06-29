@@ -3960,6 +3960,17 @@ async function initDataSource(panesObj, onUpdate) {
   const applyRealState = (real) => {
     if (!real || typeof real !== 'object') return;
     const realIds = Object.keys(real);
+    // Once a real backend has answered (even with an empty set), drop the
+    // MOCK_PANES seed so the UI shows the genuine "waiting for agents" state
+    // instead of leaving demo agents on screen. Without this, an idle backend
+    // ({} state) leaves the loading-placeholder demos visible indefinitely.
+    if (window._gmuxBackendConnected && realIds.length === 0) {
+      for (const id of Object.keys(panesObj)) {
+        if (panesObj[id] && panesObj[id]._mockSeed) delete panesObj[id];
+      }
+      paneOrder = Object.keys(panesObj);
+      return;
+    }
     if (realIds.length === 0) return;
 
     // Remove panes that no longer exist in the real state
@@ -4017,9 +4028,10 @@ async function initDataSource(panesObj, onUpdate) {
         const invoke = window.__TAURI__?.core?.invoke ||
           (await import('https://cdn.jsdelivr.net/npm/@tauri-apps/api@2/core').catch(()=>({invoke:null}))).invoke;
         if (!invoke) throw new Error('Tauri invoke unavailable');
+        window._gmuxBackendConnected = true; // Tauri backend reachable — mock seed may now be cleared
         const initial = await invoke('get_pane_state');
-        if (initial && initial !== '{}') {
-          const real = JSON.parse(initial);
+        {
+          const real = JSON.parse(initial || '{}');
           applyRealState(real);
           if (_deriveSessions(panesObj)) renderSessionTabs();
           onUpdate({ ...panesObj });
@@ -4096,6 +4108,7 @@ async function initDataSource(panesObj, onUpdate) {
     const apiBase = window.GMUX_API || 'http://127.0.0.1:8769';
     const resp = await fetch(`${apiBase}/api/state`, { signal: AbortSignal.timeout(1500) });
     if (resp.ok) {
+      window._gmuxBackendConnected = true; // real backend answered — mock seed may now be cleared
       const real = await resp.json();
       applyRealState(real);
       if (_deriveSessions(panesObj)) renderSessionTabs();
@@ -6412,6 +6425,9 @@ const PRESETS = [
 // evolution loop keeps the placeholder alive so the UI still has something
 // to render — see initDataSource).
 let panes      = JSON.parse(JSON.stringify(MOCK_PANES));
+// Tag each seeded placeholder so initDataSource can drop them once a real
+// backend connects (even when the backend reports an empty/idle agent set).
+for (const _id in panes) { if (panes[_id]) panes[_id]._mockSeed = true; }
 let paneOrder  = Object.keys(MOCK_PANES);
 // Default selection — overridden in initDataSource once real pane IDs arrive
 let selectedId = paneOrder[0] || '%1';
