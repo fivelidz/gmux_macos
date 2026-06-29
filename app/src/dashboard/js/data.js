@@ -103,7 +103,31 @@ window.DATA = (function () {
     if (state.requestedSource === 'mock') return 'mock';
     // auto: prefer live if the agents file exists
     const live = await tryFetch(SOURCES.live.agents);
-    return live ? 'live' : 'mock';
+    if (live) return 'live';
+    // No live data reachable.
+    //
+    // IMPORTANT (fix): only fabricate DEMO agents when the demo was explicitly
+    // asked for. Inside the real Tauri app — or any time the page is served from
+    // the gmux backend rather than the standalone ./serve.sh demo — silently
+    // substituting fake "#1..#8" agents made the packaged app look like a demo
+    // even though it's the real thing. In those contexts we return 'live' and
+    // simply show an empty/"waiting for data" canvas until the backend feeds us.
+    const isTauri = (typeof window !== 'undefined') && (
+      !!window.__TAURI_INTERNALS__ ||
+      !!(window.__TAURI__ && (window.__TAURI__.event || window.__TAURI__.core))
+    );
+    // Opt-in demo: ?demo=1 in the URL, or window.GMUX_ALLOW_DEMO === true.
+    const demoAllowed = (typeof window !== 'undefined') && (
+      window.GMUX_ALLOW_DEMO === true ||
+      /[?&]demo=1\b/.test(window.location ? window.location.search : '')
+    );
+    if (isTauri || !demoAllowed) {
+      console.warn('[data] no live data yet — staying on live (no demo substitution). ' +
+                   'Add ?demo=1 to the URL to see the sample demo agents.');
+      return 'live';
+    }
+    console.warn('[data] no live data — falling back to DEMO agents (explicitly allowed).');
+    return 'mock';
   }
 
   async function loadAll() {

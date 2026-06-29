@@ -68,7 +68,28 @@ and prints a sanity check:
 If you ever see `✗ ... MISSING`, the packaged build's extra windows will be blank
 — investigate the plugin, don't assume the app is empty.
 
-### 3. The backend sidecars must be running for live data
+### 3a. "It showed DEMO agents on a practice launch" — fixed
+**Symptom:** on a fresh/practice launch the Agent Monitor displayed fake sample
+agents (`#1`–`#8` editing `src/auth/auth.py`, `src/compositor/main.cpp`, …)
+instead of your real agents — making it look like a canned demo.
+
+**Cause:** the dashboard data layer (`app/src/dashboard/js/data.js`) used
+`source: 'auto'`. When live data wasn't reachable *yet* (backend still starting,
+no agents active, or feeds briefly empty), `probeSource()` silently fell back to
+`'mock'`, and the mock evolvers (`evolveMock`/`seedActiveOps`) actively
+**fabricated** those demo agents.
+
+**Fix (applied in this repo):** the mock/demo path is now **opt-in only**. It runs
+only if you pass `?demo=1` in the URL or set `window.GMUX_ALLOW_DEMO = true`.
+Inside the real Tauri app it **never** substitutes demo agents — if there's no
+live data yet it just shows an empty "waiting for data" canvas until the backend
+feeds it. The same fix is mirrored in `agent-monitor/src/dashboard/js/data.js`
+(the workshop copy) so it can't be reintroduced when that's promoted to the app.
+
+To intentionally see the sample demo (e.g. for a screenshot), open the dashboard
+with `?demo=1` or run the standalone `agent-monitor/src/dashboard/serve.sh`.
+
+### 3b. The backend sidecars must be running for live data
 The UI shows live agent/folder/file data that comes from the Python backend
 (`backend/status/monitor.py` on :8769) and is re-emitted by Rust as Tauri events.
 `scripts/launch-v4.sh` starts the monitor automatically. If you launch the Tauri
