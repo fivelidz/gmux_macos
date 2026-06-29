@@ -3,6 +3,11 @@
 > **You are a coding agent.** Your job is to get **gmux** running on this macOS
 > machine. This document is your brief. Read it fully before acting, then work
 > through the phases in order. Report back at each ✅ checkpoint.
+>
+> **Before you start:** read [`docs/TAURI_APP_STATUS.md`](docs/TAURI_APP_STATUS.md).
+> This IS the real, full gmux app (not a demo). That note explains the build
+> steps and the reasons it can *look* empty (no committed `dist/`, missing
+> backend sidecar, leftover `0.1.0` version strings) so you don't chase ghosts.
 
 ---
 

@@ -5,6 +5,8 @@
 > **If you are a coding agent tasked with getting this working on macOS, start
 > here → [`MACOS_AGENT_SETUP.md`](MACOS_AGENT_SETUP.md).**
 > Full patch list and rationale: [`docs/MACOS_PORTING.md`](docs/MACOS_PORTING.md).
+> **Is this a real app or a demo?** → [`docs/TAURI_APP_STATUS.md`](docs/TAURI_APP_STATUS.md)
+> (it's the real app — that note explains the build steps so it doesn't *look* like a demo).
 >
 > **Companion tools** (Ghostty terminal + qalcode AI CLI + QTK plugin +
 > fivelidz's settings), each with its own agent install guide →
