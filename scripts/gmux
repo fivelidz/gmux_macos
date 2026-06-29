@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# gmux — unified entry point. v3.6.4
+#
+# This replaces the old ~/projects/gmux/scripts/gmux which launched a
+# separate Python stack with its own monitor / gesture / voice processes.
+# Symlink ~/.local/bin/gmux → here to make `gmux` from terminal launch the
+# current Tauri-based gmux-system instead.
+#
+# Usage:
+#   gmux                  # launch the Tauri desktop app (default)
+#   gmux --browser        # browser-only mode (no Tauri)
+#   gmux --check          # sanity check; don't launch
+#   gmux --backend-only   # start monitor + UI server, no Tauri/browser
+#   gmux attach           # tmux attach to the gmux session
+#   gmux status           # one-shot pane state from monitor
+#   gmux help             # show this message
+#
+# Subcommands match what the legacy gmux script accepted, so muscle memory
+# from ~/projects/gmux still works.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
+SYSTEM_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+case "${1:-}" in
+  ""|"--browser"|"--check"|"--dev")
+    # Hand off to launch.sh; supports --browser / --dev flags.
+    # No arg = default Tauri launch.
+    exec "$SYSTEM_DIR/scripts/launch.sh" "${1:-}"
+    ;;
+
+  --backend-only)
+    # Start monitor + UI HTTP server, no Tauri or browser.
+    # Cross-platform port check: lsof works on Linux and macOS.
+    _port_in_use() { lsof -i :"$1" >/dev/null 2>&1; }
+    if pgrep -f "$SYSTEM_DIR/backend/status/monitor.py" >/dev/null 2>&1; then
+      echo "  ✓ monitor already running"
+    else
+      echo "  ↻ starting monitor.py"
+      setsid python3.11 "$SYSTEM_DIR/backend/status/monitor.py" \
+        </dev/null >/tmp/gmux-monitor.log 2>&1 &
+      disown
+    fi
+    if ! _port_in_use 5550; then
+      echo "  ↻ starting UI HTTP server on :5550"
+      cd "$SYSTEM_DIR"
+      setsid python3 -m http.server 5550 \
+        </dev/null >/tmp/gmux-ui.log 2>&1 &
+      disown
+    fi
+    sleep 2
+    echo "  ✓ http://localhost:5550/ui/v3/index.html"
+    echo "  ✓ http://localhost:8769/health"
+    ;;
+
+  attach)
+    # Drop into the gmux tmux session
+    tmux attach -t gmux 2>/dev/null || tmux new-session -s gmux
+    ;;
+
+  status)
+    # One-shot pane state dump
+    if ! curl -s --max-time 2 http://127.0.0.1:8769/health >/dev/null 2>&1; then
+      echo "  ✗ monitor not running on :8769 — run 'gmux --backend-only' first"
+      exit 1
+    fi
+    curl -s http://127.0.0.1:8769/api/state | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+for pid, p in d.items():
+    print(f\"{pid:5}  win{p['window_index']:>2}  {p['window_name'][:30]:30} {p['state']:12}  {p['foreground_cmd']}\")
+"
+    ;;
+
+  list|ls)
+    # Show tmux sessions + pane summary
+    tmux list-sessions 2>/dev/null || echo "  (no tmux sessions)"
+    ;;
+
+  help|--help|-h)
+    head -19 "$0" | tail -16 | sed 's|^# \?||'
+    ;;
+
+  *)
+    echo "gmux: unknown subcommand '$1'"
+    echo "Run 'gmux help' for usage."
+    exit 1
+    ;;
+esac

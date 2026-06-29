@@ -1,0 +1,81 @@
+[package]
+name = "gmuxtest"
+version = "0.1.0"
+description = "gmuxtest — UI sandbox for gesture-aware terminal multiplexer"
+authors = ["fivelidz"]
+edition = "2021"
+
+[lib]
+name = "gmuxtest_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+# Optional feature: VT-parser backend (currently a stub in terminal_backend.rs).
+# Default builds use xterm-passthrough only; this is a placeholder for future work.
+[features]
+default = []
+vte-backend = []
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Core Tauri
+# macOS: Tauri 2 uses native WKWebView — no webkit2gtk dependency needed.
+#        On Linux, ensure libwebkit2gtk-4.1-dev (Debian) or webkit2gtk-4.1 (Arch) is installed.
+#
+# CRITICAL: `custom-protocol` MUST be enabled for release builds.
+# Without it, tauri's build.rs sets cfg(dev)=true even with `cargo build --release`,
+# which makes the webview try to load http://localhost:1421/ (the vite dev server)
+# instead of the bundled tauri://localhost/ assets — resulting in a blank window
+# showing "Could not connect to localhost: Connection refused".
+# Reference: tauri-2.10.3/build.rs lines 252-255 — `let dev = !custom_protocol`.
+tauri = { version = "2", features = ["custom-protocol"] }
+# tauri-plugin-shell: cross-platform (Linux, macOS, Windows). No TODO needed.
+tauri-plugin-shell = "2"
+# tauri-plugin-global-shortcut: cross-platform. Key codes (Ctrl vs Cmd) are
+# handled at runtime via cfg!(target_os = "macos") in lib.rs::setup_shortcuts.
+tauri-plugin-global-shortcut = "2"
+
+# PTY — spawn tmux and forward I/O to WebView.
+# portable-pty supports Linux, macOS, and Windows. No Linux-only code paths.
+# macOS: tmux must be installed via `brew install tmux`.
+portable-pty = "0.8"
+
+# Serialisation — fully cross-platform, no TODO needed.
+serde     = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# v4 PTY core deps (lifted from maestro). All cross-platform.
+# Tokio runtime for the per-session output emitter task + kill_session async.
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "process"] }
+# DashMap holds the live PtySession map, lock-free for concurrent reads.
+dashmap = "5"
+# Errors via thiserror, structured for serialisation to the frontend.
+thiserror = "1"
+# Logging used by maestro PTY code; tauri-plugin-log can later capture this.
+log = "0.4"
+
+# v4 — `which::which()` to detect whether tmux is installed at startup.
+# Cross-platform pure-Rust binary lookup; tiny dep.
+which = "6"
+
+# v4 — Claude usage API (Anthropic /api/oauth/usage) needs HTTP + creds.
+# reqwest uses rustls-tls so we avoid system OpenSSL dependency.
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+# directories: cross-platform home/config dir discovery for the file
+# fallback (~/.claude/.credentials.json).
+directories = "5"
+# alpha.22 — embedded gmux HTTP API (other apps/agents query + control gmux).
+# axum on :6310, reusing the v4 PTY ProcessManager + the same token store as
+# the phone bridge (~/.config/gmux/auth_tokens.json).
+axum = { version = "0.7", default-features = false, features = ["tokio", "http1", "json", "query"] }
+tower-http = { version = "0.5", features = ["cors"] }
+# keyring: read Claude OAuth tokens from native credential store
+# (Linux Secret Service / Windows Credential Manager). macOS uses the
+# `security` CLI directly so keyring isn't pulled in there.
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+keyring = "3"
+
+# Unix process-group signalling (kill -PGID for clean shutdown).
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

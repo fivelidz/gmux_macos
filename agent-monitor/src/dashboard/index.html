@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en" data-theme="obsidian">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>gmux agent display · v4.6</title>
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+
+  <!-- ============================ TOP BAR ============================ -->
+  <header id="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <span class="session-name" id="session-name-big" title="Active gmux session — change via the session dropdown">gmux</span>
+      <div class="product-title" title="gmux agent display — second-monitor view of your gmux agents">
+        <span class="pt-line1">gmux agent</span>
+        <span class="pt-line2">display</span>
+      </div>
+      <span class="version-tag" id="version-tag">v4.6</span>
+    </div>
+
+    <div class="session-region">
+      <label class="topbar-label">session</label>
+      <select class="session-pick" id="session-pick" title="Switch tmux session">
+        <option value="*">(all)</option>
+      </select>
+    </div>
+
+    <div class="title-region">
+      <span class="title-prefix">watching</span>
+      <span class="title-agent" id="title-agent">—</span>
+      <span class="title-pane"  id="title-pane"></span>
+      <span class="title-state" id="title-state"></span>
+      <span class="title-follow hidden" id="title-follow" title="Auto-switch is ON — dashboard follows whichever pane is focused in gmux">🔗 auto-switching</span>
+    </div>
+
+    <div class="top-controls">
+
+      <div class="topbar-btn-group">
+        <button class="btn-labeled" id="btn-follow" title="Auto-switch: when ON, this dashboard always shows whichever gmux pane you currently have focused. Switch agents in gmux and the flowchart follows you.">
+          <span class="bi">🔗</span><span class="bl">auto-switch</span>
+        </button>
+        <button class="btn-labeled active" id="btn-history" title="Show inactive folders + files at low opacity. Turn OFF for a strict active-only view (just the bright pulsing chain).">
+          <span class="bi">🕓</span><span class="bl">trails</span>
+        </button>
+        <button class="btn-labeled" id="btn-overview" title="Switch to all-agents web overview">
+          <span class="bi">⊞</span><span class="bl">all</span>
+        </button>
+      </div>
+
+      <div class="topbar-btn-group">
+        <select class="theme-pick" id="theme-pick" title="Visual theme">
+          <option value="obsidian">obsidian</option>
+          <option value="gruvbox">gruvbox</option>
+          <option value="dark">dark</option>
+          <option value="light-wood">light-wood</option>
+        </select>
+      </div>
+
+      <div class="topbar-btn-group">
+        <button class="btn-labeled" id="btn-pause"      title="Pause / resume updates (Space)">
+          <span class="bi">⏸</span><span class="bl">pause</span>
+        </button>
+        <button class="btn-labeled" id="btn-fullscreen" title="Fullscreen (F)">
+          <span class="bi">⛶</span><span class="bl">full</span>
+        </button>
+        <button class="btn-labeled" id="btn-help" title="Open the user guide (G)">
+          <span class="bi">❓</span><span class="bl">guide</span>
+        </button>
+        <button class="btn-labeled" id="btn-style" title="Style options — edge style, stroke weight, pulse size, label toggle">
+          <span class="bi">⚙</span><span class="bl">style</span>
+        </button>
+        <button class="btn-labeled" id="btn-aquarium" title="Aquarium view — ambient avatar / mascot view of your agents. Coming soon." onclick="window.GMUX_AQUARIUM_NOTICE && window.GMUX_AQUARIUM_NOTICE()">
+          <span class="bi">🐠</span><span class="bl">aquarium</span>
+          <span class="bl" style="font-size:9px;opacity:.6;letter-spacing:.04em;">soon</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============================ STYLE OPTIONS PANEL ============================ -->
+  <div class="style-panel hidden" id="style-panel">
+    <div class="sp-head">
+      <span class="sp-title">Style Options</span>
+      <button class="sp-close" id="sp-close">✕</button>
+    </div>
+    <div class="sp-body">
+      <div class="sp-row">
+        <label class="sp-label">Edge style</label>
+        <div class="sp-btns" id="sp-edge-style">
+          <button class="sp-opt active" data-val="curve">curve</button>
+          <button class="sp-opt" data-val="ortho">ortho</button>
+          <button class="sp-opt" data-val="arc">arc</button>
+        </div>
+      </div>
+      <div class="sp-row">
+        <label class="sp-label">Stroke weight</label>
+        <div class="sp-btns" id="sp-stroke">
+          <button class="sp-opt" data-val="thin">thin</button>
+          <button class="sp-opt active" data-val="normal">normal</button>
+          <button class="sp-opt" data-val="thick">thick</button>
+        </div>
+      </div>
+      <div class="sp-row">
+        <label class="sp-label">Pulse size</label>
+        <div class="sp-btns" id="sp-pulse">
+          <button class="sp-opt" data-val="small">small</button>
+          <button class="sp-opt active" data-val="normal">normal</button>
+          <button class="sp-opt" data-val="large">large</button>
+        </div>
+      </div>
+      <div class="sp-row">
+        <label class="sp-label">Timer labels</label>
+        <div class="sp-btns" id="sp-labels">
+          <button class="sp-opt active" data-val="on">on</button>
+          <button class="sp-opt" data-val="off">off</button>
+        </div>
+      </div>
+      <div class="sp-row">
+        <label class="sp-label" title="When ON, exactly one agent has exactly one in-flight op at a time (clean test view)">Test mode</label>
+        <div class="sp-btns" id="sp-single">
+          <button class="sp-opt active" data-val="normal">normal</button>
+          <button class="sp-opt" data-val="single">single-action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ MAIN GRID ============================ -->
+  <main id="grid">
+
+    <!-- LEFT RAIL · agents -->
+    <aside id="rail-left" class="rail">
+      <div class="rail-head">
+        <h2>agents</h2>
+        <button class="rail-collapse" id="rail-collapse" title="Collapse rail">◀</button>
+      </div>
+      <div class="rail-actions">
+        <button class="mini-btn" id="btn-select-all" title="Show all agents on canvas">show all</button>
+        <button class="mini-btn" id="btn-clear-all"  title="Hide all agents from canvas">hide all</button>
+      </div>
+      <div class="rail-body" id="agent-list">
+        <!-- agent rows injected -->
+      </div>
+      <div class="rail-foot">
+        <span class="src-indicator" id="src-indicator">mock</span>
+        <span class="conn-indicator" id="conn-indicator">●</span>
+      </div>
+    </aside>
+
+    <!-- CENTER · flowchart canvas -->
+    <section id="center">
+      <svg id="flow" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- arrowheads — use CSS vars via filter trick isn't possible, so we
+               keep these hardcoded; the style-options stroke colours stay per-theme -->
+          <marker id="ah-write" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34d399"/></marker>
+          <marker id="ah-edit"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fde047"/></marker>
+          <marker id="ah-read"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker>
+          <marker id="ah-bash"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#60a5fa"/></marker>
+          <marker id="ah-perm"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#fb923c"/></marker>
+          <marker id="ah-block" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f87171"/></marker>
+
+          <!-- glow filters
+               v4.5.1 — filterUnits="userSpaceOnUse" with explicit pixel
+               region so a perfectly vertical edge (zero-width bbox) still
+               gets a non-zero filter area. With the default
+               objectBoundingBox units, x="-50%" of a 0-width bbox = 0 =
+               filter outputs nothing = invisible line. This is the bug
+               where "lines connecting nodes are completely invisible if
+               they would be purely vertical".
+               v3.5.3 — reduced stdDeviation (2.5→1.0, 4→1.8) because the
+               wide blur was making every line look fuzzy on WebKitGTK.
+               The merged SourceGraphic now sits on a tight halo instead
+               of a fog — same visual cue, sharp line. -->
+          <filter id="glow"
+                  filterUnits="userSpaceOnUse"
+                  x="-10000" y="-10000" width="30000" height="30000">
+            <feGaussianBlur stdDeviation="1.0" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="bigGlow"
+                  filterUnits="userSpaceOnUse"
+                  x="-10000" y="-10000" width="30000" height="30000">
+            <feGaussianBlur stdDeviation="1.8" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+
+          <!-- background dot grid pattern -->
+          <pattern id="bg-pattern" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+            <circle cx="12" cy="12" r="1.3" fill="currentColor" class="bg-pattern-dot"/>
+          </pattern>
+        </defs>
+        <!-- background fill (does NOT pan/zoom) -->
+        <rect class="bg-rect" x="0" y="0" width="100%" height="100%" fill="url(#bg-pattern)"/>
+        <g id="flow-pan">
+          <g id="layer-edges-history"></g>
+          <g id="layer-edges-active"></g>
+          <g id="layer-pulses"></g>
+          <g id="layer-edge-labels"></g>
+          <g id="layer-nodes"></g>
+          <!-- overview territory borders sit below nodes -->
+          <g id="layer-territories"></g>
+        </g>
+      </svg>
+
+      <div class="canvas-legend">
+        <div class="lg"><span class="ll" style="background:#34d399"></span>write</div>
+        <div class="lg"><span class="ll" style="background:#fde047"></span>edit</div>
+        <div class="lg"><span class="ll" style="background:#a78bfa"></span>read</div>
+        <div class="lg"><span class="ll" style="background:#60a5fa"></span>bash</div>
+        <div class="lg"><span class="ll" style="background:#fb923c"></span>perm</div>
+        <div class="lg"><span class="ll" style="background:#f87171"></span>blocked</div>
+      </div>
+      <div class="canvas-hint" id="canvas-hint">drag · scroll = zoom · click for details</div>
+      <div class="canvas-empty" id="canvas-empty">click an agent name on the left to begin</div>
+      <div class="toast hidden" id="toast">copied</div>
+    </section>
+
+    <!-- RIGHT DETAIL PANEL -->
+    <aside id="rail-right" class="rail-detail hidden">
+      <div class="resize-handle" id="resize-handle" title="Drag to resize"></div>
+      <div class="rd-head">
+        <h2 id="rd-title">detail</h2>
+        <div class="rd-head-actions">
+          <button class="rd-copy hidden" id="rd-copy" title="Copy path to clipboard">📋</button>
+          <button class="rd-close" id="rd-close" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <div class="rd-tabs hidden" id="rd-tabs"></div>
+      <div class="rd-body" id="rd-body"></div>
+    </aside>
+
+  </main>
+
+  <!-- aquarium "coming soon" mini-toast handler -->
+  <script>
+    window.GMUX_AQUARIUM_NOTICE = function () {
+      let t = document.getElementById('toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.className = 'toast';
+        document.body.appendChild(t);
+      }
+      t.textContent = '🐠 Aquarium view — coming soon';
+      t.classList.remove('hidden');
+      clearTimeout(window._gmuxAquariumTimer);
+      window._gmuxAquariumTimer = setTimeout(() => t.classList.add('hidden'), 2200);
+    };
+  </script>
+
+  <!-- scripts -->
+  <script src="js/version.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/subagents.js"></script>
+  <script src="js/agent_rail.js"></script>
+  <script src="js/detail_panel.js"></script>
+  <script src="js/flow_layout.js"></script>
+  <script src="js/flow_render.js"></script>
+  <script src="js/flow_pulses.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

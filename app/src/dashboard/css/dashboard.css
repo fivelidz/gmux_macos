@@ -1,0 +1,1389 @@
+/* =====================================================================
+   gmux dashboard v4.0
+   ===================================================================== */
+
+/* ============================== THEMES ============================== */
+
+:root, [data-theme="obsidian"] {
+  --bg:           #1e1e1e;
+  --bg-2:         #262626;
+  --surface:      #2a2a2a;
+  --surface-2:    #333333;
+  --card:         #2e2e2e;
+  --card-hi:      #3a3a3a;
+  --border:       rgba(255,255,255,0.06);
+  --border-hi:    rgba(255,255,255,0.18);
+  --text:         #d4d4d4;
+  --text-dim:     #999999;
+  --muted:        #707070;
+  --bright:       #ffffff;
+  --accent:       #a78bfa;
+  --accent-fg:    #1e1e1e;
+
+  --op-write:     #34d399;
+  --op-edit:      #fde047;
+  --op-read:      #a78bfa;
+  --op-bash:      #60a5fa;
+  --op-perm:      #fb923c;
+  --op-block:     #f87171;
+  --op-history:   #5a5a5a;
+
+  --st-working:      #34d399;
+  --st-waiting:      #f87171;
+  --st-permission:   #fb923c;
+  --st-done:         #60a5fa;
+  --st-error:        #f87171;
+  --st-idle:         #4b5563;
+  --st-rate-limited: #ef4444;   /* v3.7 */
+
+  --node-folder:   #67e8f9;
+  --node-file:     #d4d4d4;
+
+  --edge-style:    curve;
+  --pattern-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="gruvbox"] {
+  --bg:           #282828;
+  --bg-2:         #32302f;
+  --surface:      #3c3836;
+  --surface-2:    #504945;
+  --card:         #3c3836;
+  --card-hi:      #504945;
+  --border:       rgba(235,219,178,0.10);
+  --border-hi:    rgba(235,219,178,0.28);
+  --text:         #ebdbb2;
+  --text-dim:     #a89984;
+  --muted:        #7c6f64;
+  --bright:       #fbf1c7;
+  --accent:       #d3869b;
+  --accent-fg:    #282828;
+
+  --op-write:     #b8bb26;
+  --op-edit:      #fabd2f;
+  --op-read:      #d3869b;
+  --op-bash:      #83a598;
+  --op-perm:      #fe8019;
+  --op-block:     #fb4934;
+  --op-history:   #665c54;
+
+  --st-working:      #b8bb26;
+  --st-waiting:      #fb4934;
+  --st-permission:   #fe8019;
+  --st-done:         #83a598;
+  --st-error:        #fb4934;
+  --st-idle:         #665c54;
+  --st-rate-limited: #fb4934;   /* v3.7 — gruvbox red */
+
+  --node-folder:   #8ec07c;
+  --node-file:     #ebdbb2;
+
+  --edge-style:    curve;
+  --pattern-color: rgba(235,219,178,0.09);
+}
+
+[data-theme="dark"] {
+  --bg:           #0b1020;
+  --bg-2:         #0e1428;
+  --surface:      #131b30;
+  --surface-2:    #1a2440;
+  --card:         #1d2845;
+  --card-hi:      #25325a;
+  --border:       rgba(255,255,255,0.08);
+  --border-hi:    rgba(255,255,255,0.22);
+  --text:         #e6eaf6;
+  --text-dim:     #9aa6c2;
+  --muted:        #6173a0;
+  --bright:       #ffffff;
+  --accent:       #818cf8;
+  --accent-fg:    #0b1020;
+
+  --op-write:     #34d399;
+  --op-edit:      #fde047;
+  --op-read:      #a78bfa;
+  --op-bash:      #60a5fa;
+  --op-perm:      #fb923c;
+  --op-block:     #f87171;
+  --op-history:   #475569;
+
+  --st-working:      #34d399;
+  --st-waiting:      #f87171;
+  --st-permission:   #fb923c;
+  --st-done:         #60a5fa;
+  --st-error:        #f87171;
+  --st-idle:         #475569;
+  --st-rate-limited: #ef4444;   /* v3.7 — orange-red for rate-limited agents */
+
+  --node-folder:   #67e8f9;
+  --node-file:     #c7d2fe;
+
+  --edge-style:    ortho;
+  --pattern-color: rgba(255,255,255,0.08);
+}
+
+/* v4: light-wood — warm beige maple, not cream */
+[data-theme="light-wood"] {
+  --bg:           #c9b48f;        /* light maple/wood */
+  --bg-2:         #bda076;        /* deeper grain */
+  --surface:      #d4be9c;
+  --surface-2:    #b69876;
+  --card:         #d8c4a4;
+  --card-hi:      #c5ad84;
+  --border:       rgba(60,40,20,0.18);
+  --border-hi:    rgba(60,40,20,0.36);
+  --text:         #3d2f20;
+  --text-dim:     #5e4b34;
+  --muted:        #856b4c;
+  --bright:       #1f1610;
+  --accent:       #7a5230;        /* dark walnut */
+  --accent-fg:    #f0e0c0;
+
+  --op-write:     #4a7c4a;
+  --op-edit:      #b58a1f;
+  --op-read:      #6a4d8a;
+  --op-bash:      #3a607a;
+  --op-perm:      #b96820;
+  --op-block:     #9a3a35;
+  --op-history:   #8a7458;
+
+  --st-working:      #4a7c4a;
+  --st-waiting:      #9a3a35;
+  --st-permission:   #b96820;
+  --st-done:         #3a607a;
+  --st-error:        #9a3a35;
+  --st-idle:         #8a7458;
+  --st-rate-limited: #9a3a35;   /* v3.7 — light-wood red */
+
+  --node-folder:   #5a7060;
+  --node-file:     #3d2f20;
+
+  --edge-style:    ortho;
+  --pattern-color: rgba(60,40,20,0.13);
+}
+
+/* ============================== BASE ============================== */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  width: 100vw; height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition: background 200ms, color 200ms;
+}
+h2 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); font-weight: 600; }
+button { font-family: inherit; }
+
+/* v3.5.3 — crisp SVG line + text rendering for the flow graph.
+   WebKitGTK's default is auto which mixes subpixel-positioning blur into
+   strokes, especially after CSS transforms (zoom, pan). Force the renderer
+   to snap to integer pixels for edges and crisper text for labels. */
+svg, svg * { shape-rendering: geometricPrecision; }
+svg text { text-rendering: optimizeLegibility; }
+.edge, .edge-hist { vector-effect: non-scaling-stroke; }
+.node-agent rect, .node-folder rect, .node-file circle,
+.node-subagent rect, .node-tool rect { shape-rendering: geometricPrecision; }
+/* Pulses/dots — keep them as pixel circles (no blurry sub-pixel offsets) */
+.pulse-dot { shape-rendering: geometricPrecision; }
+
+/* ============================== TOP BAR ============================== */
+#topbar {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.logo-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: brandPulse 3s ease-in-out infinite;
+}
+@keyframes brandPulse { 0%,100% { box-shadow: 0 0 6px var(--accent); } 50% { box-shadow: 0 0 16px var(--accent); } }
+
+/* v4.6 — top-left brand area:
+   big bold = active gmux SESSION NAME
+   smaller two-line subtitle = product name "gmux agent display"
+   (the product name is no longer the dominant text) */
+.session-name {
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--bright);
+  letter-spacing: 0.4px;
+  line-height: 1;
+}
+.product-title {
+  display: flex; flex-direction: column;
+  line-height: 1.15;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+  margin-left: 2px;
+}
+.product-title .pt-line1,
+.product-title .pt-line2 {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+.product-title .pt-line2 { color: var(--muted); }
+
+/* keep legacy classes harmless in case any inline styles or sub-doc refers to them */
+.logo-text { font-size: 15px; font-weight: 700; color: var(--bright); letter-spacing: 0.5px; }
+.version-tag {
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  font-size: 9px;
+  background: var(--surface-2);
+  color: var(--accent);
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  border: 1px solid var(--border);
+}
+
+.session-region {
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+  height: 40px;
+}
+.topbar-label {
+  font-size: 9px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.2px;
+}
+.session-pick {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.title-region {
+  flex: 1; display: flex; align-items: baseline; gap: 8px;
+  font-size: 14px;
+  min-width: 0;
+}
+.title-prefix { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; flex-shrink: 0; }
+.title-agent  {
+  font-size: 17px; font-weight: 600; color: var(--bright);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.title-pane   { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+.title-state  {
+  font-size: 10px; padding: 3px 7px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600;
+  flex-shrink: 0;
+}
+.title-state.working    { background: rgba(52,211,153,0.18);  color: var(--st-working); }
+.title-state.waiting    { background: rgba(248,113,113,0.18); color: var(--st-waiting); }
+.title-state.permission { background: rgba(251,146,60,0.20);  color: var(--st-permission); }
+.title-state.done       { background: rgba(96,165,250,0.18);  color: var(--st-done); }
+.title-state.error      { background: rgba(248,113,113,0.18); color: var(--st-error); }
+.title-state.idle       { background: rgba(150,150,150,0.18); color: var(--st-idle); }
+
+.title-follow {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: pulse 2s infinite;
+  flex-shrink: 0;
+}
+.title-follow.hidden { display: none; }
+
+.top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.topbar-btn-group { display: flex; align-items: center; gap: 4px; }
+
+.btn-labeled {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  min-width: 48px; height: 42px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  gap: 1px;
+  transition: background 120ms, border-color 120ms, color 120ms;
+}
+.btn-labeled .bi { font-size: 14px; line-height: 1; }
+.btn-labeled .bl { font-size: 8.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+.btn-labeled:hover { background: var(--card-hi); border-color: var(--border-hi); }
+.btn-labeled:hover .bl { color: var(--text-dim); }
+
+/* v4: explicit active state, high specificity */
+.btn-labeled.active,
+.btn-labeled.active:hover {
+  background: var(--accent) !important;
+  color: var(--accent-fg) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px var(--accent), 0 0 8px rgba(167,139,250,0.3);
+}
+.btn-labeled.active .bi { color: var(--accent-fg); }
+.btn-labeled.active .bl { color: var(--accent-fg); opacity: 0.9; }
+
+.theme-pick {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 11px;
+  font-family: "JetBrains Mono", monospace;
+  padding: 8px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  height: 42px;
+}
+
+/* ============================== MAIN GRID ============================== */
+:root {
+  --detail-width: clamp(200px, 18vw, 280px);   /* v4.2: narrower default */
+}
+#grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 0px;
+  height: calc(100vh - 60px);
+  transition: grid-template-columns 200ms cubic-bezier(.2,.8,.2,1);
+  position: relative;
+}
+body.rail-collapsed #grid { grid-template-columns: 40px 1fr 0px; }
+body.detail-open    #grid { grid-template-columns: 240px 1fr var(--detail-width); }
+body.rail-collapsed.detail-open #grid { grid-template-columns: 40px 1fr var(--detail-width); }
+body.resizing #grid { transition: none; }
+body.resizing { cursor: ew-resize; user-select: none; }
+
+@media (max-width: 900px) {
+  body.detail-open #grid { grid-template-columns: 240px 1fr 0px; }
+  body.detail-open #rail-right {
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: clamp(220px, 50vw, 320px);
+    z-index: 50;
+    box-shadow: -8px 0 24px rgba(0,0,0,0.4);
+  }
+}
+
+/* ============================== LEFT RAIL ============================== */
+.rail {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+.rail-head {
+  padding: 12px 14px 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.rail-collapse {
+  background: transparent; border: none; color: var(--muted);
+  cursor: pointer; font-size: 14px; padding: 0 4px;
+  transition: color 120ms, transform 200ms;
+}
+.rail-collapse:hover { color: var(--text); }
+body.rail-collapsed .rail-collapse { transform: rotate(180deg); }
+body.rail-collapsed .rail-head h2,
+body.rail-collapsed .rail-actions,
+body.rail-collapsed .rail-body,
+body.rail-collapsed .rail-foot { display: none; }
+
+.rail-actions {
+  display: flex; gap: 4px; padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.mini-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  padding: 4px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 120ms;
+}
+.mini-btn:hover { background: var(--card-hi); color: var(--text); border-color: var(--border-hi); }
+
+.rail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 6px;
+}
+.rail-body::-webkit-scrollbar { width: 6px; }
+.rail-body::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 3px; }
+
+.rail-foot {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--muted);
+}
+.src-indicator { text-transform: uppercase; letter-spacing: 1px; }
+.conn-indicator { color: var(--st-working); animation: pulse 2s infinite; }
+.conn-indicator.warn { color: var(--st-permission); }
+.conn-indicator.err  { color: var(--st-error); }
+
+/* agent row */
+.agent-row {
+  display: flex; align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  margin-bottom: 2px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: background 120ms;
+}
+.agent-row:hover { background: var(--surface); }
+.agent-row.watching { background: var(--card-hi); border-left-color: var(--accent); }
+
+/* v4: sub-agent markers hidden — qalcode2 handles it */
+.agent-row.is-sub { display: none; }
+.ar-sub-marker { display: none; }
+
+.ar-check {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border-hi);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+.ar-check:hover { border-color: var(--accent); }
+.agent-row.shown .ar-check { background: var(--accent); border-color: var(--accent); }
+.agent-row.shown .ar-check::after { content: "✓"; color: var(--accent-fg); font-size: 11px; font-weight: 700; }
+
+.ar-state-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--st-idle);
+}
+.ar-state-dot.working      { background: var(--st-working);      box-shadow: 0 0 6px var(--st-working); animation: pulse 1.6s infinite; }
+.ar-state-dot.waiting      { background: var(--st-waiting); }
+.ar-state-dot.permission   { background: var(--st-permission); animation: pulse 0.8s infinite; }
+.ar-state-dot.done         { background: var(--st-done); }
+.ar-state-dot.error        { background: var(--st-error); }
+.ar-state-dot.idle         { background: var(--st-idle); }
+/* v3.7 — rate-limited: orange-red pulse to make it immediately visible */
+.ar-state-dot.rate_limited { background: var(--st-rate-limited); animation: pulse 1s infinite; }
+
+/* v3.7 — rate-limit and auth badges in agent rail */
+.ar-rl-badge {
+  font-size: 10px; margin-left: 4px;
+  opacity: 0.9; cursor: help;
+}
+.ar-auth-badge { font-size: 10px; margin-left: 4px; cursor: help; }
+
+.ar-name-region {
+  flex: 1; min-width: 0;
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  gap: 1px;
+}
+.ar-name {
+  font-size: 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--text);
+}
+.agent-row.watching .ar-name { color: var(--bright); font-weight: 600; }
+.ar-mini-stats {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px; color: var(--muted);
+  display: flex; gap: 6px;
+}
+.ar-mini-stats .ms { white-space: nowrap; }
+.ar-pane {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; color: var(--muted);
+  flex-shrink: 0;
+}
+.ar-active-pin {
+  color: var(--accent);
+  font-size: 11px;
+  flex-shrink: 0;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ============================== CENTER ============================== */
+#center {
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+}
+#flow {
+  width: 100%; height: 100%;
+  cursor: grab;
+  display: block;
+  color: var(--pattern-color);    /* used by .bg-pattern-dot via currentColor */
+}
+#flow:active { cursor: grabbing; }
+
+.bg-pattern-dot { fill: var(--pattern-color); }
+.bg-rect { pointer-events: none; }
+
+.canvas-legend {
+  position: absolute; bottom: 14px; left: 14px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid var(--border);
+  padding: 8px 12px; border-radius: 6px;
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 10px; color: var(--text-dim);
+  backdrop-filter: blur(8px);
+  z-index: 5;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+[data-theme="light-wood"] .canvas-legend { background: rgba(216,196,164,0.92); color: var(--text); }
+.canvas-legend .lg { display: flex; align-items: center; gap: 5px; }
+.canvas-legend .ll { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+
+.canvas-hint {
+  position: absolute; top: 14px; right: 14px;
+  font-size: 10px; color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  background: rgba(0,0,0,0.4);
+  padding: 4px 8px; border-radius: 4px;
+  letter-spacing: 0.5px;
+  z-index: 5;
+}
+[data-theme="light-wood"] .canvas-hint { background: rgba(216,196,164,0.85); color: var(--muted); }
+
+.canvas-empty {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--muted);
+  pointer-events: none;
+}
+.canvas-empty.hidden { display: none; }
+
+/* toast */
+.toast {
+  position: absolute; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  opacity: 1;
+  transition: opacity 200ms;
+}
+.toast.hidden { opacity: 0; pointer-events: none; }
+
+/* ============================== SVG NODES ============================== */
+.node { cursor: pointer; transition: opacity 200ms; }
+.node.dim { opacity: 0.22; }
+
+.node-agent rect {
+  rx: 28; ry: 28;
+  fill: var(--card);
+  stroke: var(--accent);
+  stroke-width: 3;
+  /* v3.6.1 — no filter blur; thick stroke + bright fill carry the
+     "agent rectangle" emphasis without making the whole shape fuzzy. */
+}
+.node-agent.s-working      rect { stroke: var(--st-working); }
+.node-agent.s-waiting      rect { stroke: var(--st-waiting); }
+.node-agent.s-permission   rect { stroke: var(--st-permission); }
+.node-agent.s-done         rect { stroke: var(--st-done); }
+.node-agent.s-error        rect { stroke: var(--st-error); }
+.node-agent.s-idle         rect { stroke: var(--st-idle); }
+/* v3.7 — rate-limited node: dashed orange-red stroke to distinguish from hard error */
+.node-agent.s-rate_limited rect { stroke: var(--st-rate-limited); stroke-dasharray: 5 3; }
+
+.node-agent text.label    { fill: var(--bright);   font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.node-agent text.sublabel { fill: var(--text-dim); font-size: 10px; text-anchor: middle; font-family: "JetBrains Mono", monospace; }
+
+.node-subagent rect {
+  rx: 20; ry: 20;
+  fill: var(--card);
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+  opacity: 0.95;
+}
+.node-subagent text.label { fill: var(--text); font-size: 12px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+
+.node-folder rect {
+  rx: 8; ry: 8;
+  fill: var(--surface-2);
+  stroke: var(--node-folder);
+  stroke-width: 1.5;
+}
+.node-folder text { fill: var(--text); font-size: 12px; text-anchor: middle; dominant-baseline: central; font-family: "JetBrains Mono", monospace; }
+
+.node-file circle {
+  fill: var(--card);
+  stroke: var(--node-file);
+  stroke-width: 2;
+}
+/* v3.6.1 — was filter: url(#bigGlow) — Gaussian blur on the node
+   circle made it look like a fuzzy planet. Active state now reads
+   from thicker stroke + bright fill, no filter. */
+.node-file.is-active circle {
+  stroke-width: 4;
+  fill: var(--card);
+  /* subtle inner glow via box-shadow-style emphasis: a thicker stroke
+     that's slightly brighter than the base stroke. No filter blur. */
+}
+.node-file text.label { fill: var(--text); font-size: 11px; text-anchor: middle; font-family: "JetBrains Mono", monospace; }
+.node-file text.op    { font-size: 9px; text-anchor: middle; text-transform: uppercase; letter-spacing: 0.8px; }
+
+.node.selected .ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+}
+
+/* ============================== SVG EDGES ============================== */
+.edge {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 200ms, stroke-width 200ms;
+}
+
+/* v3.6.1 — FULL REWRITE of edge styling. Previous versions used
+   feGaussianBlur "glow" filters that on WebKitGTK made every line
+   look fuzzy. We drop the filter entirely on active edges and rely
+   on:
+     - thick solid stroke (4px integer) for active
+     - thin dashed stroke (1.5px) for history — dash pattern is the
+       single most-recognisable "this isn't live anymore" signal
+     - full saturation + bright fill for active colors
+     - desaturated + 0.35 opacity for history
+   This gives sharp lines AND a clear active/historical distinction. */
+:root {
+  --stroke-active:  4;          /* thick, integer, no anti-aliasing slop */
+  --stroke-history: 2;          /* thinner */
+  --pulse-r:        4;
+}
+
+/* All edges: shared baseline — no fill, round caps for clean joins */
+.edge, .edge-hist {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* ── ACTIVE edges ─────────────────────────────────────────────────
+   Solid, bright, NO filter. They stand out by sheer contrast: a
+   4px solid coloured line on a dark background reads as live
+   instantly. No glow needed. */
+.edge.write { stroke: var(--op-write); stroke-width: var(--stroke-active); opacity: 1; }
+.edge.edit  { stroke: var(--op-edit);  stroke-width: var(--stroke-active); opacity: 1; }
+.edge.read  { stroke: var(--op-read);  stroke-width: var(--stroke-active); opacity: 1; }
+.edge.bash  { stroke: var(--op-bash);  stroke-width: var(--stroke-active); opacity: 1; }
+.edge.perm  { stroke: var(--op-perm);  stroke-width: var(--stroke-active); opacity: 1; stroke-dasharray: 8 4; animation: edgeMarch 1.5s linear infinite; }
+.edge.block { stroke: var(--op-block); stroke-width: var(--stroke-active); opacity: 1; stroke-dasharray: 8 4; animation: edgeMarch 0.8s linear infinite; }
+
+/* ── HISTORY edges ────────────────────────────────────────────────
+   Thin + dashed + desaturated + low opacity. Four redundant signals
+   so the eye can't confuse a stale edge with a live one. The dash
+   pattern is the killer feature — the eye registers "interrupted
+   line = not currently active" pre-attentively. */
+.edge.h-write, .edge.h-edit, .edge.h-read, .edge.h-bash,
+.edge.h-perm, .edge.h-block {
+  stroke-width: var(--stroke-history);
+  stroke-dasharray: 5 4;
+  opacity: 0.35;
+  filter: saturate(0.55) brightness(0.85);
+}
+.edge.h-write { stroke: var(--op-write); }
+.edge.h-edit  { stroke: var(--op-edit);  }
+.edge.h-read  { stroke: var(--op-read);  }
+.edge.h-bash  { stroke: var(--op-bash);  }
+.edge.h-perm  { stroke: var(--op-perm);  stroke-dasharray: 3 3; }
+.edge.h-block { stroke: var(--op-block); stroke-dasharray: 3 3; }
+
+/* Generic 'history' edges (folder-links, file-with-no-recent-op).
+   These are the structural backbone — not data-flow, not stale-data.
+   Render them as thin neutral dotted lines so they're visible but
+   never visually compete with live activity. */
+.edge.history    { stroke: var(--op-history); stroke-width: 1.5; opacity: 0.4; stroke-dasharray: 2 4; }
+.edge.sub-link   { stroke: var(--accent);     stroke-width: 2;   opacity: 0.6; stroke-dasharray: 4 3; }
+
+/* v4.1: history-toggle OFF — hide tinted history edges entirely (the
+   active propagated chain stays visible because its kind is 'write' etc,
+   not 'h-write'). The model is NOT filtered — layout stays stable. */
+body.no-history .edge.h-write,
+body.no-history .edge.h-edit,
+body.no-history .edge.h-read,
+body.no-history .edge.h-bash,
+body.no-history .edge.h-perm,
+body.no-history .edge.h-block,
+body.no-history .edge.history { display: none; }
+
+/* v4.1: overview-mode time-decay — edges fade to grey after 30s */
+body.overview-mode .edge.stale {
+  stroke: var(--op-history) !important;
+  filter: none !important;
+}
+
+/* v4.1: P7 — no more dimming non-selected nodes; selection ring is enough.
+   Old .dim rules removed. */
+
+@keyframes edgeMarch { to { stroke-dashoffset: -20; } }
+
+/* edge label box */
+.edge-label-bg {
+  fill: var(--surface);
+  stroke: var(--border-hi);
+  stroke-width: 1;
+  rx: 4; ry: 4;
+}
+.edge-label text {
+  font-family: "JetBrains Mono", monospace;
+  fill: var(--text);
+}
+.edge-label .op-name { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.edge-label .op-time { font-size: 9px; fill: var(--text-dim); }
+.edge-label .op-dur  { font-size: 9px; fill: var(--accent); }
+
+.edge-label.write .op-name { fill: var(--op-write); }
+.edge-label.edit  .op-name { fill: var(--op-edit); }
+.edge-label.read  .op-name { fill: var(--op-read); }
+.edge-label.bash  .op-name { fill: var(--op-bash); }
+.edge-label.perm  .op-name { fill: var(--op-perm); }
+.edge-label.block .op-name { fill: var(--op-block); }
+
+/* v3.6.1 — was filter: url(#bigGlow). Pulse dots are the small
+   coloured circles that animate along edges to indicate live data
+   flow. The glow filter made them smear; without it they're crisp
+   moving discs that read as motion immediately. */
+.pulse-dot { /* no filter — crisp pixel circles */ }
+
+/* ============================== RIGHT DETAIL PANEL ============================== */
+.rail-detail {
+  background: var(--bg-2);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  position: relative;
+}
+.rail-detail.hidden { display: none; }
+body.detail-open .rail-detail.hidden { display: flex; }
+
+.resize-handle {
+  position: absolute; top: 0; bottom: 0; left: -3px;
+  width: 8px;                /* v4.2: easier to grab */
+  cursor: ew-resize;
+  z-index: 10;
+  background: transparent;
+  transition: background 120ms;
+}
+.resize-handle:hover { background: var(--accent); opacity: 0.5; }
+.resize-handle::before {
+  content: ""; position: absolute; left: 3px; top: 50%; transform: translateY(-50%);
+  width: 2px; height: 40px; background: var(--border-hi); border-radius: 2px;
+  opacity: 0.5; transition: opacity 120ms;
+}
+.resize-handle:hover::before { opacity: 1; background: var(--accent); }
+
+.rd-head {
+  padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.rd-head-actions { display: flex; gap: 6px; align-items: center; }
+.rd-close, .rd-copy {
+  background: transparent; border: 1px solid transparent;
+  color: var(--muted);
+  cursor: pointer; font-size: 14px;
+  padding: 3px 7px; border-radius: 4px;
+  transition: all 120ms;
+}
+.rd-close:hover, .rd-copy:hover {
+  color: var(--text); border-color: var(--border-hi); background: var(--surface);
+}
+.rd-copy.hidden { display: none; }
+
+.rd-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.rd-tabs.hidden { display: none; }
+.rd-tab {
+  flex: 1;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 120ms;
+}
+.rd-tab:hover { color: var(--text); }
+.rd-tab.active { color: var(--bright); border-bottom-color: var(--accent); }
+
+.rd-body {
+  flex: 1; overflow-y: auto;
+  padding: 14px 18px;
+  font-size: 13px;
+}
+.rd-body::-webkit-scrollbar { width: 6px; }
+.rd-body::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 3px; }
+
+.rd-section { margin-bottom: 18px; }
+.rd-section h3 {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted); margin: 0 0 8px;
+}
+.rd-row {
+  display: flex; gap: 8px; padding: 4px 0;
+  font-family: "JetBrains Mono", monospace; font-size: 11px;
+  border-bottom: 1px dashed var(--border);
+}
+.rd-row .k { color: var(--muted); min-width: 84px; flex-shrink: 0; }
+.rd-row .v { color: var(--text); word-break: break-all; }
+.rd-row .v.bright { color: var(--bright); }
+
+.rd-title-big {
+  font-size: 17px; font-weight: 600; color: var(--bright);
+  margin-bottom: 4px; word-break: break-all;
+}
+.rd-subtitle {
+  font-family: "JetBrains Mono", monospace; font-size: 10px;
+  color: var(--text-dim); margin-bottom: 14px;
+  word-break: break-all;
+}
+
+/* v4: op breakdown widget */
+.op-breakdown {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin: 6px 0 14px;
+}
+.op-breakdown .op-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px 8px; border-radius: 4px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+}
+.op-breakdown .op-pill .pill-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.op-breakdown .op-pill .pill-name { color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; }
+.op-breakdown .op-pill .pill-count { color: var(--bright); font-weight: 700; }
+.op-breakdown .op-pill.write .pill-dot { background: var(--op-write); }
+.op-breakdown .op-pill.edit  .pill-dot { background: var(--op-edit); }
+.op-breakdown .op-pill.read  .pill-dot { background: var(--op-read); }
+.op-breakdown .op-pill.bash  .pill-dot { background: var(--op-bash); }
+.op-breakdown .op-pill.perm  .pill-dot { background: var(--op-perm); }
+
+/* nested folder tree */
+.rd-tree { font-family: "JetBrains Mono", monospace; font-size: 11px; }
+.rd-tree-node {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: default;
+  white-space: nowrap;
+}
+.rd-tree-node:hover { background: var(--surface); }
+.rd-tree-node.folder { font-weight: 600; }
+.rd-tree-node .icon  { width: 16px; text-align: center; flex-shrink: 0; }
+.rd-tree-node .name  { color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.rd-tree-node.folder .name { color: var(--node-folder); }
+.rd-tree-node.file .name { color: var(--text-dim); }
+.rd-tree-node.file.is-active .name { color: var(--text); }
+.rd-tree-node .meta  { font-size: 9.5px; color: var(--muted); flex-shrink: 0; }
+
+/* v3.6.4 — "+/−" expand control. Round, bordered, like a real button. Always
+   visible as the LEFT-MOST element of every row so the tree's expand affordance
+   is unambiguous. Files have an empty .expand spacer so the icons line up. */
+.rd-tree-node .expand {
+  width: 16px; height: 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-size: 13px; font-weight: 700; line-height: 1;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  transition: background 100ms, border-color 100ms;
+}
+.rd-tree-node .expand:hover { background: var(--surface); border-color: var(--accent); }
+.rd-tree-node.file .expand,
+.rd-tree-node .expand:empty { border: none; cursor: default; background: transparent; }
+
+/* Folder name is a separate click target that drills into the subfolder. */
+.rd-tree-node.folder .name[data-action="open"] { cursor: pointer; transition: color 100ms; }
+.rd-tree-node.folder .name[data-action="open"]:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* File rows are clickable to inspect. */
+.rd-tree-node.file { cursor: pointer; }
+
+/* v3.6.4 — historical (no recent ops, but file is known to exist) renders
+   greyer + dashed underline so the user can still see its location in the
+   tree but understands it's stale. */
+.rd-tree-node.file.historical .name {
+  color: var(--muted);
+  text-decoration: underline dashed var(--border);
+  text-underline-offset: 2px;
+}
+.rd-tree-node.file.historical .icon { opacity: 0.5; }
+.rd-tree-node.file.historical .meta { opacity: 0.6; }
+
+/* Children block + collapsed behaviour.
+   The dashed left border is what visually attaches children to their parent.
+   When .collapsed, hide the immediately-following children block. */
+.rd-tree-children {
+  padding-left: 14px;
+  border-left: 1px dashed var(--border);
+  margin-left: 14px;   /* aligns with the "+/−" pill's centre */
+}
+.rd-tree-node.folder.collapsed + .rd-tree-children { display: none; }
+
+.rd-op-log { display: flex; flex-direction: column; gap: 4px; }
+.rd-op-row {
+  display: grid;
+  grid-template-columns: 60px 50px 1fr;
+  gap: 6px;
+  padding: 4px 0;
+  font-family: "JetBrains Mono", monospace; font-size: 10.5px;
+  border-bottom: 1px dashed var(--border);
+}
+.rd-op-row .ts { color: var(--muted); }
+.rd-op-row .op { font-weight: 700; text-transform: uppercase; font-size: 9px; padding: 2px 5px; border-radius: 3px; text-align: center; }
+.rd-op-row .op.write { background: rgba(52,211,153,0.18); color: var(--op-write); }
+.rd-op-row .op.edit  { background: rgba(253,224,71,0.18); color: var(--op-edit); }
+.rd-op-row .op.read  { background: rgba(167,139,250,0.18); color: var(--op-read); }
+.rd-op-row .op.bash  { background: rgba(96,165,250,0.18); color: var(--op-bash); }
+.rd-op-row .det { color: var(--text-dim); word-break: break-all; }
+
+/* ====================================================================
+   v4.1 additions
+   ==================================================================== */
+
+/* P0b — agent rail todo-count pill (right side) */
+.ar-todo-pill {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+.ar-todo-pill.done {
+  background: rgba(52,211,153,0.18);
+  color: var(--op-write);
+  border-color: rgba(52,211,153,0.4);
+}
+.agent-row.watching .ar-todo-pill {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+/* P2 — agent-row.is-active replaces the duplicate 📌 marker.
+   We tint the left border + state dot already does pulse work. */
+.agent-row.is-active {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+/* P0 — todo checklist in detail panel */
+.rd-section h3 .todo-count {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 6px;
+  color: var(--text-dim);
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+.rd-section h3 .todo-count.all-done {
+  background: rgba(52,211,153,0.2);
+  color: var(--op-write);
+}
+.rd-todo-list {
+  display: flex; flex-direction: column;
+  gap: 3px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+}
+.rd-todo {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  color: var(--text);
+  line-height: 1.35;
+}
+.rd-todo:hover { background: var(--surface); }
+.rd-todo .cb {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+  margin-top: 1px;
+}
+.rd-todo.done .cb { color: var(--op-write); }
+.rd-todo.done .t {
+  color: var(--text-dim);
+  text-decoration: line-through;
+  text-decoration-color: var(--muted);
+}
+.rd-todo .t { flex: 1; }
+.rd-todo.active {
+  background: rgba(129, 140, 248, 0.12);
+  border-left: 2px solid var(--accent, #818cf8);
+  padding-left: 4px;
+}
+.rd-todo.active .cb { color: var(--accent, #818cf8); }
+.rd-todo.active .t  { color: var(--text-bright, #f0f4fc); font-weight: 600; }
+
+/* P6 — inline copy button next to filename */
+.rd-title-big {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.rd-title-big .rd-title-text { flex: 1; min-width: 0; }
+.rd-copy-inline {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: all 120ms;
+}
+.rd-copy-inline:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.rd-copy-inline:active { transform: scale(0.95); }
+
+/* P4b — make the background dots a bit more visible (just larger r) */
+.bg-pattern-dot { fill: var(--pattern-color); r: 1.3; }
+
+/* P5 — overview stale edge fallback (matched by JS .stale class) */
+.edge.stale {
+  filter: none !important;
+  stroke-width: 1.2 !important;
+}
+
+/* v4.2 — todo line inside agent node */
+.node-agent text.todo-line,
+.node-subagent text.todo-line {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  fill: var(--text-dim);
+  text-anchor: middle;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.node-agent text.todo-line.done,
+.node-subagent text.todo-line.done {
+  fill: var(--op-write);
+}
+
+/* v4.2 — help modal overlay (opens user guide) */
+.help-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.help-overlay.hidden { display: none; }
+.help-modal {
+  background: var(--bg-2);
+  border: 1px solid var(--border-hi);
+  border-radius: 8px;
+  width: min(900px, 92vw);
+  height: min(86vh, 720px);
+  display: flex; flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.help-modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.help-modal-head h2 {
+  font-size: 14px;
+  color: var(--bright);
+  letter-spacing: 1px;
+}
+.help-modal-close {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer;
+  padding: 4px 10px; border-radius: 4px;
+  font-size: 13px;
+}
+.help-modal-close:hover {
+  background: var(--surface); color: var(--text);
+}
+.help-modal-body {
+  flex: 1; overflow-y: auto;
+  padding: 18px 24px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.help-modal-body h1 { font-size: 18px; color: var(--bright); margin: 0 0 12px; }
+.help-modal-body h2 {
+  font-size: 14px; color: var(--accent);
+  text-transform: none; letter-spacing: 0;
+  margin: 24px 0 8px;
+  font-weight: 600;
+}
+.help-modal-body h3 { font-size: 12px; color: var(--text-dim); margin: 16px 0 6px; }
+.help-modal-body p  { margin: 0 0 8px; }
+.help-modal-body code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1px 5px; border-radius: 3px;
+  color: var(--accent);
+}
+.help-modal-body ul { margin: 6px 0 12px 18px; padding: 0; }
+.help-modal-body li { margin: 3px 0; }
+.help-modal-body strong { color: var(--bright); }
+.help-modal-body kbd {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-hi);
+  padding: 1px 5px; border-radius: 3px;
+  color: var(--text);
+}
+.help-color-key {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin: 8px 0;
+}
+.help-color-key .k {
+  display: flex; align-items: center; gap: 6px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+}
+.help-color-key .k .sw {
+  width: 14px; height: 4px; border-radius: 2px;
+}
+
+/* ====================================================================
+   v4.3 additions
+   ==================================================================== */
+
+/* V1 v4.4 — node active-chain tint via a separate overlay rect rendered
+   in JS (class .tint-rect). No color-mix() — pure SVG fill-opacity.
+   The base rect keeps var(--card) fill; the tint rect sits above it
+   at 0.13 opacity with the op colour. */
+.node .tint-rect { pointer-events: none; }
+.node.op-write .tint-rect { fill: var(--op-write); fill-opacity: 0.13; }
+.node.op-edit  .tint-rect { fill: var(--op-edit);  fill-opacity: 0.13; }
+.node.op-read  .tint-rect { fill: var(--op-read);  fill-opacity: 0.13; }
+.node.op-bash  .tint-rect { fill: var(--op-bash);  fill-opacity: 0.13; }
+.node.op-perm  .tint-rect { fill: var(--op-perm);  fill-opacity: 0.16; }
+.node.op-block .tint-rect { fill: var(--op-block); fill-opacity: 0.16; }
+
+/* file circles — just boost stroke colour and weight */
+.node-file.op-write circle { stroke: var(--op-write); stroke-width: 3.5; }
+.node-file.op-edit  circle { stroke: var(--op-edit);  stroke-width: 3.5; }
+.node-file.op-read  circle { stroke: var(--op-read);  stroke-width: 3.5; }
+.node-file.op-bash  circle { stroke: var(--op-bash);  stroke-width: 3.5; }
+.node-file.op-perm  circle { stroke: var(--op-perm);  stroke-width: 3.5; }
+.node-file.op-block circle { stroke: var(--op-block); stroke-width: 3.5; }
+
+/* V3 — code change deltas (inline in op log + big block in file detail) */
+.delta-add { color: var(--op-write); font-weight: 600; font-family: "JetBrains Mono", monospace; }
+.delta-rem { color: var(--op-block); font-weight: 600; font-family: "JetBrains Mono", monospace; }
+.delta-pair { white-space: nowrap; font-family: "JetBrains Mono", monospace; font-size: 10.5px; }
+
+.delta-summary {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 6px 0 4px;
+  font-family: "JetBrains Mono", monospace;
+}
+.delta-summary .big {
+  font-size: 22px;
+  font-weight: 700;
+}
+.delta-summary .delta-sep { color: var(--muted); font-size: 18px; }
+.delta-summary .delta-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-left: 4px;
+}
+
+/* V2 — edge label slightly wider, more legible single-instance */
+.edge-label-bg {
+  fill: var(--surface);
+  stroke: var(--border-hi);
+  stroke-width: 1.2;
+  opacity: 0.96;
+}
+.edge-label { filter: drop-shadow(0 1px 4px rgba(0,0,0,0.3)); }
+
+/* ====================================================================
+   v4.4 additions — GAD branding, style panel, organic overview
+   ==================================================================== */
+
+/* Brand: GAD + small subtitle */
+.logo-sub {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-left: 2px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+  line-height: 1;
+}
+
+/* ============ STYLE OPTIONS PANEL ============ */
+.style-panel {
+  position: fixed;
+  top: 64px;
+  right: 12px;
+  width: 280px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-hi);
+  border-radius: 8px;
+  z-index: 900;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+  font-size: 12px;
+  color: var(--text);
+}
+.style-panel.hidden { display: none; }
+.style-panel .sp-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.style-panel .sp-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.style-panel .sp-close {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.style-panel .sp-close:hover {
+  border-color: var(--border-hi); color: var(--text);
+}
+.style-panel .sp-body {
+  padding: 12px 14px;
+  display: flex; flex-direction: column;
+  gap: 12px;
+}
+.style-panel .sp-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.style-panel .sp-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+.style-panel .sp-btns {
+  display: flex; gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px;
+}
+.style-panel .sp-opt {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 4px 9px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: "JetBrains Mono", monospace;
+  transition: all 100ms;
+}
+.style-panel .sp-opt:hover { color: var(--text); }
+.style-panel .sp-opt.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+}
+
+/* ============ ORGANIC OVERVIEW TERRITORIES ============ */
+.territory-shape {
+  fill: var(--surface);
+  fill-opacity: 0.18;
+  stroke: var(--border-hi);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.territory-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  fill: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* In overview, files should look like nodes scattered, not stacked.
+   Add a touch more separation between agent + file circles by allowing
+   the agent rect to keep its standard look. (Layout handles spacing.) */
+body.overview-mode .canvas-hint::after {
+  content: " · web mode";
+  color: var(--accent);
+  margin-left: 6px;
+}

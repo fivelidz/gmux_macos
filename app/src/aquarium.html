@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>gmux aquarium 🦀</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #060c18;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  width: 100vw; height: 100vh;
+}
+
+/* ── TANK ── */
+#tank {
+  position: relative;
+  width: 100%; height: 100%;
+  background: linear-gradient(180deg,
+    #04091a 0%, #061222 12%, #0a1e3a 35%,
+    #0d2850 58%, #0f3060 75%, #0a2040 100%);
+  overflow: hidden;
+}
+
+/* ── CAUSTICS ── */
+#caustics {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 80px 22px at 18% 8%,  rgba(80,190,255,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 50px 16px at 52% 4%,  rgba(80,190,255,.05) 0%, transparent 70%),
+    radial-gradient(ellipse 100px 28px at 78% 11%, rgba(80,190,255,.05) 0%, transparent 70%),
+    radial-gradient(ellipse 60px 18px at 38% 18%, rgba(80,190,255,.04) 0%, transparent 70%);
+  animation: caustic 14s ease-in-out infinite alternate;
+}
+@keyframes caustic {
+  from { transform: translateX(0) scaleX(1); opacity:.8; }
+  to   { transform: translateX(40px) scaleX(1.06); opacity:1; }
+}
+
+/* ── FLOOR ── */
+#floor {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 90px;
+  background: linear-gradient(180deg,
+    transparent 0%, rgba(160,120,60,.18) 30%,
+    rgba(190,145,80,.4) 65%, rgba(210,165,95,.6) 100%);
+}
+#floor::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background: rgba(220,200,140,.25); filter: blur(2px);
+}
+
+/* ─────────────────────────────────────────────
+   ZONE PANELS  — drawn as SVG backgrounds
+   Layout (left→right across the floor):
+     sleep cove | research nook | coding dock | devops bridge | design bay
+   ──────────────────────────────────────────── */
+.zone {
+  position: absolute;
+  bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.zone-label {
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(255,255,255,.22);
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+.zone-prop { display: block; }
+
+/* ── BUBBLES ── */
+.bubble {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  border: 1px solid rgba(140,210,255,.5);
+  background: radial-gradient(circle at 35% 35%,
+    rgba(200,240,255,.4) 0%, rgba(100,180,255,.1) 60%, transparent 100%);
+  animation: rise linear forwards;
+}
+@keyframes rise {
+  0%   { opacity:.9; transform: translateY(0)     translateX(0); }
+  40%  { opacity:.7; transform: translateY(-110px) translateX(7px); }
+  100% { opacity:0;  transform: translateY(-320px) translateX(-6px); }
+}
+
+/* ── ZZZ (sleep) ── */
+.zzz {
+  position: absolute;
+  font-size: 13px;
+  color: rgba(180,210,255,.7);
+  font-weight: 700;
+  pointer-events: none;
+  animation: float-z linear forwards;
+  text-shadow: 0 0 8px rgba(100,160,255,.6);
+}
+@keyframes float-z {
+  0%   { opacity:0;   transform: translateY(0)    scale(.7); }
+  20%  { opacity:.9;  transform: translateY(-14px) scale(1); }
+  100% { opacity:0;   transform: translateY(-60px) scale(.5) translateX(12px); }
+}
+
+/* ── FISH ── */
+.fish {
+  position: absolute; pointer-events: none; opacity:.55;
+  animation: swim-r linear infinite;
+}
+.fish.left { animation-name: swim-l; transform: scaleX(-1); }
+@keyframes swim-r {
+  from { transform: translateX(-90px); }
+  to   { transform: translateX(calc(100vw + 90px)); }
+}
+@keyframes swim-l {
+  from { transform: scaleX(-1) translateX(-90px); }
+  to   { transform: scaleX(-1) translateX(calc(100vw + 90px)); }
+}
+
+/* ── SPARKLE ── */
+.sparkle {
+  position: absolute; pointer-events: none; font-size:14px;
+  animation: sparkle-out 1.3s ease-out forwards;
+}
+@keyframes sparkle-out {
+  0%   { transform: translate(0,0) scale(1); opacity:1; }
+  100% { transform: translate(var(--dx),var(--dy)) scale(0); opacity:0; }
+}
+
+/* ── CRAB WRAP ── */
+.crab-wrap {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; z-index: 10;
+  /* NO css transition on position — we drive it in rAF */
+}
+
+/* ── LABELS ABOVE CRAB ── */
+.crab-labels {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.crab-name {
+  font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: #e2e8f0; white-space: nowrap;
+  background: rgba(0,0,0,.5); padding: 2px 7px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.09);
+  text-shadow: 0 0 6px rgba(0,0,0,.9);
+}
+.crab-action {
+  font-size: 9px; color: #bae6fd; white-space: nowrap;
+  background: rgba(0,0,0,.52); padding: 1px 6px; border-radius: 5px;
+  border: 1px solid rgba(100,200,255,.14);
+  max-width: 170px; overflow: hidden; text-overflow: ellipsis;
+  transition: color .5s;
+}
+.crab-state-badge {
+  font-size: 8px; padding: 1px 5px; border-radius: 5px;
+  font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  transition: background .5s, color .5s;
+}
+
+/* ── WORKLOAD BAR ── */
+.workload-bar {
+  width: 48px; height: 4px; border-radius: 3px;
+  background: rgba(255,255,255,.1);
+  overflow: hidden;
+}
+.workload-fill {
+  height: 100%; border-radius: 3px;
+  transition: width .8s ease, background .5s;
+}
+
+/* ── TODO PIPS ── */
+.todo-pips {
+  display: flex; gap: 2px; align-items: center;
+}
+.todo-pip {
+  width: 5px; height: 5px; border-radius: 50%;
+}
+
+/* ── CRAB BODY ── */
+.crab-body {
+  position: relative;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.65));
+}
+.crab-body.working    { animation: a-busy    .75s ease-in-out infinite; }
+.crab-body.thinking   { animation: a-think   1.6s ease-in-out infinite; }
+.crab-body.idle       { animation: a-breathe 3.5s ease-in-out infinite; }
+.crab-body.permission { animation: a-alert    .5s ease-in-out infinite; }
+.crab-body.error      { animation: a-shake    .3s ease-in-out infinite; }
+.crab-body.done       { animation: a-bounce   .6s ease-in-out 3; }
+.crab-body.waiting    { animation: a-breathe 2.5s ease-in-out infinite; }
+.crab-body.is-active  { filter: drop-shadow(0 0 14px gold) drop-shadow(0 4px 10px rgba(0,0,0,.65)); }
+
+@keyframes a-busy    { 0%,100%{transform:scaleY(1) translateY(0)} 50%{transform:scaleY(.91) translateY(2px)} }
+@keyframes a-think   { 0%,100%{transform:rotate(-4deg)} 50%{transform:rotate(4deg)} }
+@keyframes a-breathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+@keyframes a-alert   { 0%,100%{transform:scale(1) translateY(0)} 50%{transform:scale(1.1) translateY(-4px)} }
+@keyframes a-shake   { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+@keyframes a-bounce  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+/* ── HAT ── */
+.hat { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); }
+
+/* ── TOOLTIP ── */
+.tooltip {
+  position: absolute; bottom: calc(100% + 10px); left: 50%;
+  transform: translateX(-50%);
+  background: rgba(4,12,28,.94); border: 1px solid rgba(100,200,255,.2);
+  border-radius: 9px; padding: 9px 13px; font-size: 10px; color: #94a3b8;
+  pointer-events: none; opacity: 0; transition: opacity .2s;
+  z-index: 50; white-space: normal; line-height: 1.6; min-width: 180px;
+}
+.crab-wrap:hover .tooltip { opacity: 1; }
+.tooltip strong { color: #e2e8f0; display: block; margin-bottom: 3px; font-size:11px; }
+.tooltip .tip-zone { color: #60a5fa; font-size: 9px; margin-bottom:4px; }
+
+/* ── HUD ── */
+#hud {
+  position: fixed; top: 12px; left: 16px; z-index: 200;
+}
+#hud-title {
+  font-size: 14px; font-weight: 700; color: rgba(140,200,255,.75);
+  letter-spacing: .1em; text-transform: uppercase;
+  text-shadow: 0 0 22px rgba(80,170,255,.5);
+}
+#hud-sub {
+  font-size: 10px; color: rgba(100,150,210,.5); margin-top:2px;
+}
+#hud-sys {
+  margin-top: 6px; font-size: 9px; color: rgba(100,160,220,.5);
+}
+#status-bar {
+  position: fixed; top: 12px; right: 16px; z-index: 200;
+  font-size: 11px; color: #64748b;
+  background: rgba(0,0,0,.5); padding: 4px 10px;
+  border-radius: 8px; border: 1px solid rgba(255,255,255,.06);
+  transition: color .3s;
+}
+#status-bar.connected  { color: #4ade80; }
+#status-bar.connecting { color: #fb923c; }
+#status-bar.error      { color: #f87171; }
+
+/* ── LEGEND ── */
+#legend {
+  position: fixed; bottom: 14px; right: 16px; z-index: 200;
+  display: flex; gap: 10px; align-items: center;
+  font-size: 9px; color: rgba(150,180,220,.45);
+  letter-spacing:.06em;
+}
+.legend-dot {
+  display:inline-block; width:7px; height:7px; border-radius:50%;
+  margin-right:3px; vertical-align:middle;
+}
+</style>
+</head>
+<body>
+<div id="tank">
+  <div id="caustics"></div>
+  <div id="floor"></div>
+</div>
+
+<div id="hud">
+  <div id="hud-title">🦀 gmux aquarium</div>
+  <div id="hud-sub">connecting…</div>
+  <div id="hud-sys"></div>
+</div>
+<div id="status-bar" class="connecting">⬤ connecting…</div>
+<div id="legend">
+  <span><span class="legend-dot" style="background:#4ade80"></span>working</span>
+  <span><span class="legend-dot" style="background:#60a5fa"></span>thinking</span>
+  <span><span class="legend-dot" style="background:#f87171"></span>waiting</span>
+  <span><span class="legend-dot" style="background:#fb923c"></span>needs you</span>
+  <span><span class="legend-dot" style="background:#94a3b8"></span>idle</span>
+</div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════════
+// gmux-ui: aquarium runs as second Tauri window. Source: avatar_concept_for_gmux/aquarium/
+const WS_URL   = 'ws://localhost:8767'; // bridge.py
+const TANK     = document.getElementById('tank');
+const STATUS   = document.getElementById('status-bar');
+const HUD_SUB  = document.getElementById('hud-sub');
+const HUD_SYS  = document.getElementById('hud-sys');
+const CRAB_W   = 58;
+
+const STATE_COLORS = {
+  working:'#4ade80', thinking:'#60a5fa', permission:'#fb923c',
+  waiting:'#f87171', done:'#a78bfa', error:'#ef4444', idle:'#94a3b8',
+};
+const STATE_LABELS = {
+  working:'WORKING', thinking:'THINKING', permission:'NEEDS YOU',
+  waiting:'WAITING', done:'DONE', error:'ERROR', idle:'IDLE',
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// ZONES  — defined as % of viewport width, floor anchors
+// Order: sleep | research | coding | devops | design
+// ═══════════════════════════════════════════════════════════════════════
+const ZONES = {
+  sleep:    { label:'💤 sleep cove',    xFrac:[0.00, 0.16], color:'rgba(80,100,160,.12)',  propFn: buildSleepCove },
+  research: { label:'📚 research nook', xFrac:[0.16, 0.35], color:'rgba(80,140,200,.10)',  propFn: buildResearchNook },
+  coding:   { label:'💻 coding dock',   xFrac:[0.35, 0.58], color:'rgba(60,180,100,.10)',  propFn: buildCodingDock },
+  devops:   { label:'⚓ ops bridge',    xFrac:[0.58, 0.76], color:'rgba(200,140,60,.10)',  propFn: buildOpsBridge },
+  design:   { label:'🎨 design bay',    xFrac:[0.76, 1.00], color:'rgba(160,80,200,.10)',  propFn: buildDesignBay },
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// ZONE SPAWN SLOTS  — crabs within each zone
+// ═══════════════════════════════════════════════════════════════════════
+const zoneSlots = {};   // zone → [{x,y}, …]
+const crabZone  = {};   // id → zone key
+const crabSlot  = {};   // id → slot index within zone
+
+function buildZoneSlots() {
+  const vw = window.innerWidth;
+  const floorY = 82;   // px from bottom — baseline
+
+  Object.entries(ZONES).forEach(([key, z]) => {
+    const x0 = z.xFrac[0] * vw + 28;
+    const x1 = z.xFrac[1] * vw - 28;
+    const w  = x1 - x0;
+    const slots = [];
+    for (let col = 0; col < 5; col++) {
+      const x = x0 + (w / 5) * col + (w / 10) + (Math.random()-.5) * 14;
+      const y = floorY + (col % 2) * 18 + Math.random() * 10;
+      slots.push({ x: Math.max(34, Math.min(vw-34, x)), y });
+    }
+    zoneSlots[key] = slots;
+  });
+}
+
+function getZoneSlot(id, zone) {
+  // assign a stable slot within the zone for this crab
+  if (crabZone[id] === zone && crabSlot[id] !== undefined) {
+    return zoneSlots[zone][crabSlot[id] % zoneSlots[zone].length];
+  }
+  // new zone assignment
+  const usedSlots = Object.entries(crabZone)
+    .filter(([cid, z]) => z === zone && cid !== id)
+    .map(([cid]) => crabSlot[cid]);
+  let nextSlot = 0;
+  while (usedSlots.includes(nextSlot) && nextSlot < 20) nextSlot++;
+  crabZone[id] = zone;
+  crabSlot[id] = nextSlot;
+  return zoneSlots[zone][nextSlot % zoneSlots[zone].length];
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SVG HELPERS
+// ═══════════════════════════════════════════════════════════════════════
+function blend(hex, target, amt) {
+  const p = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+  const t = p(target), c = p(hex);
+  const r = c.map((v,i) => Math.round(v+(t[i]-v)*amt));
+  return '#'+r.map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+
+function makeCrabSVG(color, size=58) {
+  const hi = blend(color,'#ffffff',.38), dk = blend(color,'#000000',.38);
+  const id = color.replace('#','');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <line x1="14" y1="37" x2="4"  y2="51" stroke="${dk}" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="21" y1="41" x2="8"  y2="53" stroke="${dk}" stroke-width="3"   stroke-linecap="round"/>
+  <line x1="44" y1="37" x2="60" y2="51" stroke="${dk}" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="49" y1="41" x2="56" y2="53" stroke="${dk}" stroke-width="3"   stroke-linecap="round"/>
+  <line x1="16" y1="33" x2="5"  y2="43" stroke="${color}" stroke-width="3.2" stroke-linecap="round"/>
+  <line x1="48" y1="33" x2="59" y2="43" stroke="${color}" stroke-width="3.2" stroke-linecap="round"/>
+  <ellipse cx="8"  cy="24" rx="7" ry="5" fill="${dk}"/>
+  <ellipse cx="56" cy="24" rx="7" ry="5" fill="${dk}"/>
+  <line x1="14" y1="28" x2="8"  y2="25" stroke="${color}" stroke-width="3.8" stroke-linecap="round"/>
+  <line x1="50" y1="28" x2="56" y2="25" stroke="${color}" stroke-width="3.8" stroke-linecap="round"/>
+  <line x1="4"  y1="21" x2="11" y2="20" stroke="${hi}" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="53" y1="21" x2="60" y2="20" stroke="${hi}" stroke-width="1.5" stroke-linecap="round"/>
+  <ellipse cx="32" cy="34" rx="20" ry="15" fill="${color}"/>
+  <ellipse cx="32" cy="34" rx="20" ry="15" fill="url(#sg${id})" opacity=".55"/>
+  <ellipse cx="26" cy="27" rx="9"  ry="5"  fill="${hi}" opacity=".3"/>
+  <path d="M18 30 Q32 22 46 30" fill="none" stroke="${hi}" stroke-width="1" opacity=".35"/>
+  <path d="M16 36 Q32 28 48 36" fill="none" stroke="${hi}" stroke-width="1" opacity=".2"/>
+  <line x1="26" y1="22" x2="23" y2="15" stroke="${dk}" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="38" y1="22" x2="41" y2="15" stroke="${dk}" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="22" cy="14" r="4"   fill="#080808"/>
+  <circle cx="42" cy="14" r="4"   fill="#080808"/>
+  <circle cx="21" cy="13" r="1.5" fill="#fff" opacity=".85"/>
+  <circle cx="41" cy="13" r="1.5" fill="#fff" opacity=".85"/>
+  <line x1="18" y1="43" x2="10" y2="56" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
+  <line x1="46" y1="43" x2="54" y2="56" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
+  <defs>
+    <radialGradient id="sg${id}" cx="40%" cy="35%" r="60%">
+      <stop offset="0%"   stop-color="#fff" stop-opacity=".28"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".2"/>
+    </radialGradient>
+  </defs>
+</svg>`;
+}
+
+// ── HATS ─────────────────────────────────────────────────────────────
+function makeHat(type, color) {
+  // All hats as tiny SVGs, 28×22px viewBox
+  const c = color, hi = blend(c,'#fff',.4), dk = blend(c,'#000',.45);
+  switch(type) {
+    case 'hard-hat':   // construction — yellow dome
+      return `<svg width="32" height="22" viewBox="0 0 32 22">
+        <ellipse cx="16" cy="16" rx="15" ry="6" fill="${dk}"/>
+        <path d="M4 16 Q4 4 16 3 Q28 4 28 16 Z" fill="#f5c518"/>
+        <rect x="2" y="14" width="28" height="4" rx="2" fill="#e6a800"/>
+        <ellipse cx="16" cy="14" rx="13" ry="4" fill="rgba(255,255,255,.1)"/>
+      </svg>`;
+    case 'beret':      // artist — coloured flat beret
+      return `<svg width="32" height="20" viewBox="0 0 32 20">
+        <ellipse cx="16" cy="14" rx="15" ry="5" fill="${dk}"/>
+        <ellipse cx="16" cy="10" rx="13" ry="9" fill="${c}"/>
+        <ellipse cx="22" cy="6"  rx="3"  ry="3" fill="${dk}"/>
+        <ellipse cx="13" cy="7"  rx="7"  ry="4" fill="${hi}" opacity=".25"/>
+      </svg>`;
+    case 'captain':    // ship captain — navy peaked cap
+      return `<svg width="34" height="22" viewBox="0 0 34 22">
+        <ellipse cx="17" cy="17" rx="16" ry="5" fill="#1a1a2e"/>
+        <rect x="5" y="8" width="24" height="10" rx="5" fill="#1e3a5f"/>
+        <rect x="5" y="8" width="24" height="5"  rx="3" fill="#2a4f7f"/>
+        <rect x="11" y="4" width="12" height="7" rx="3" fill="#1e3a5f"/>
+        <ellipse cx="17" cy="8" rx="5" ry="2" fill="gold" opacity=".7"/>
+        <ellipse cx="17" cy="7" rx="8" ry="1.5" fill="#0d1b2a" opacity=".5"/>
+      </svg>`;
+    case 'graduation': // research — mortarboard
+      return `<svg width="34" height="22" viewBox="0 0 34 22">
+        <ellipse cx="17" cy="17" rx="13" ry="5" fill="#1a1a1a"/>
+        <polygon points="17,2 34,11 17,16 0,11" fill="#1a1a1a"/>
+        <polygon points="17,2 34,11 17,16 0,11" fill="${c}" opacity=".6"/>
+        <circle cx="17" cy="9" r="2" fill="${hi}" opacity=".5"/>
+        <line x1="30" y1="11" x2="32" y2="20" stroke="#888" stroke-width="1.5"/>
+        <circle cx="32" cy="21" r="2" fill="${c}" opacity=".8"/>
+      </svg>`;
+    case 'nightcap':   // sleep — droopy nightcap with bobble
+      return `<svg width="28" height="28" viewBox="0 0 28 28">
+        <path d="M8 20 Q6 10 14 3 Q20 8 20 18 Q20 22 14 22 Q8 22 8 20Z" fill="${c}" opacity=".85"/>
+        <path d="M14 3 Q18 0 22 6 Q20 10 20 18" fill="${dk}" opacity=".3"/>
+        <ellipse cx="14" cy="20" rx="8" ry="3" fill="${dk}"/>
+        <circle cx="14" cy="3"  r="3" fill="${hi}" opacity=".8"/>
+        <ellipse cx="11" cy="10" rx="3" ry="5" fill="${hi}" opacity=".15" transform="rotate(-15,11,10)"/>
+      </svg>`;
+    default:
+      return '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ZONE PROPS (decorative furniture per zone)
+// ═══════════════════════════════════════════════════════════════════════
+function buildSleepCove(x0, x1) {
+  const cx = (x0+x1)/2;
+  // Bed of coral / hammock shape
+  return `<svg width="${x1-x0}" height="60" viewBox="0 0 ${x1-x0} 60" style="position:absolute;bottom:62px;left:${x0}px">
+    <!-- hammock rope -->
+    <path d="M10 20 Q${(x1-x0)/2} 45 ${x1-x0-10} 20" fill="none" stroke="rgba(180,140,80,.4)" stroke-width="3" stroke-linecap="round"/>
+    <!-- pillows -->
+    <ellipse cx="24" cy="22" rx="12" ry="6" fill="rgba(140,100,180,.35)" stroke="rgba(180,140,220,.2)" stroke-width="1"/>
+    <ellipse cx="${x1-x0-24}" cy="22" rx="12" ry="6" fill="rgba(140,100,180,.35)" stroke="rgba(180,140,220,.2)" stroke-width="1"/>
+    <!-- moon decor -->
+    <text x="${(x1-x0)/2-8}" y="14" font-size="14" opacity=".3">🌙</text>
+  </svg>`;
+}
+
+function buildResearchNook(x0, x1) {
+  const w = x1-x0;
+  return `<svg width="${w}" height="70" viewBox="0 0 ${w} 70" style="position:absolute;bottom:62px;left:${x0}px">
+    <!-- bookshelf back -->
+    <rect x="10" y="10" width="${w-20}" height="52" rx="3" fill="rgba(80,60,30,.35)" stroke="rgba(160,120,60,.2)" stroke-width="1"/>
+    <!-- shelves -->
+    <rect x="10" y="30" width="${w-20}" height="3" fill="rgba(160,120,60,.3)"/>
+    <rect x="10" y="48" width="${w-20}" height="3" fill="rgba(160,120,60,.3)"/>
+    <!-- books top shelf -->
+    ${[0,1,2,3,4].map(i=>{
+      const bx = 16 + i*((w-32)/5);
+      const bh = 14+Math.floor(i*3.7)%8;
+      const bc = ['#c0392b','#27ae60','#2980b9','#8e44ad','#f39c12'][i];
+      return `<rect x="${bx}" y="${30-bh}" width="${(w-32)/5-3}" height="${bh}" rx="1" fill="${bc}" opacity=".6"/>`;
+    }).join('')}
+    <!-- books mid shelf -->
+    ${[0,1,2].map(i=>{
+      const bx = 16 + i*((w-32)/3);
+      const bh = 12+i*4;
+      const bc = ['#e74c3c','#1abc9c','#9b59b6'][i];
+      return `<rect x="${bx}" y="${48-bh}" width="${(w-32)/3-4}" height="${bh}" rx="1" fill="${bc}" opacity=".5"/>`;
+    }).join('')}
+    <!-- magnifying glass -->
+    <text x="${w-28}" y="62" font-size="16" opacity=".35">🔭</text>
+  </svg>`;
+}
+
+function buildCodingDock(x0, x1) {
+  const w = x1-x0;
+  return `<svg width="${w}" height="70" viewBox="0 0 ${w} 70" style="position:absolute;bottom:62px;left:${x0}px">
+    <!-- desk surface -->
+    <rect x="8" y="38" width="${w-16}" height="6" rx="2" fill="rgba(60,80,60,.5)" stroke="rgba(80,140,80,.2)" stroke-width="1"/>
+    <!-- monitor -->
+    <rect x="${w/2-22}" y="8" width="44" height="30" rx="3" fill="rgba(20,30,20,.8)" stroke="rgba(60,180,80,.3)" stroke-width="1.5"/>
+    <rect x="${w/2-20}" y="10" width="40" height="26" rx="2" fill="rgba(5,15,5,.9)"/>
+    <!-- code lines on monitor -->
+    <line x1="${w/2-16}" y1="15" x2="${w/2+8}"  y2="15" stroke="#4ade80" stroke-width="1.5" opacity=".7"/>
+    <line x1="${w/2-16}" y1="19" x2="${w/2+2}"  y2="19" stroke="#60a5fa" stroke-width="1.5" opacity=".6"/>
+    <line x1="${w/2-12}" y1="23" x2="${w/2+12}" y2="23" stroke="#4ade80" stroke-width="1.5" opacity=".5"/>
+    <line x1="${w/2-16}" y1="27" x2="${w/2+6}"  y2="27" stroke="#f87171" stroke-width="1.5" opacity=".5"/>
+    <line x1="${w/2-12}" y1="31" x2="${w/2+10}" y2="31" stroke="#a78bfa" stroke-width="1.5" opacity=".4"/>
+    <!-- monitor stand -->
+    <rect x="${w/2-3}" y="38" width="6" height="8" fill="rgba(60,80,60,.6)"/>
+    <!-- keyboard -->
+    <rect x="${w/2-18}" y="46" width="36" height="10" rx="2" fill="rgba(40,50,40,.7)" stroke="rgba(80,140,80,.2)" stroke-width="1"/>
+    ${[0,1,2,3,4,5,6,7,8,9].map(i=>`<rect x="${w/2-16+i*3.4}" y="48" width="2.5" height="2" rx=".5" fill="rgba(100,180,100,.3)"/>`).join('')}
+    ${[0,1,2,3,4,5,6,7,8].map(i=>`<rect x="${w/2-14+i*3.4}" y="52" width="2.5" height="2" rx=".5" fill="rgba(100,180,100,.3)"/>`).join('')}
+    <!-- coffee mug -->
+    <rect x="${w/2+24}" y="30" width="10" height="12" rx="2" fill="rgba(80,50,30,.7)"/>
+    <path d="M${w/2+34} 33 Q${w/2+40} 33 ${w/2+40} 38 Q${w/2+40} 43 ${w/2+34} 43" fill="none" stroke="rgba(120,80,50,.6)" stroke-width="1.5"/>
+    <text x="${w/2+25}" y="30" font-size="6" fill="rgba(255,200,100,.4)">☕</text>
+  </svg>`;
+}
+
+function buildOpsBridge(x0, x1) {
+  const w = x1-x0;
+  return `<svg width="${w}" height="70" viewBox="0 0 ${w} 70" style="position:absolute;bottom:62px;left:${x0}px">
+    <!-- server rack -->
+    <rect x="8" y="6" width="28" height="54" rx="3" fill="rgba(30,40,60,.7)" stroke="rgba(80,120,200,.25)" stroke-width="1.5"/>
+    ${[0,1,2,3,4,5].map(i=>{
+      const onCol = ['#4ade80','#60a5fa','#4ade80','#f87171','#4ade80','#60a5fa'][i];
+      return `<rect x="11" y="${10+i*8}" width="22" height="6" rx="1" fill="rgba(20,30,50,.8)" stroke="rgba(60,100,180,.2)" stroke-width="1"/>
+      <circle cx="17" cy="${13+i*8}" r="1.5" fill="${onCol}" opacity=".8"/>
+      <rect x="20" y="${11+i*8}" width="10" height="1.5" rx=".5" fill="rgba(100,140,200,.3)"/>
+      <rect x="20" y="${13.5+i*8}" width="7" height="1.5" rx=".5" fill="rgba(100,140,200,.2)"/>`;
+    }).join('')}
+    <!-- terminal screen -->
+    <rect x="44" y="10" width="50" height="34" rx="3" fill="rgba(5,10,20,.9)" stroke="rgba(80,180,100,.3)" stroke-width="1.5"/>
+    <text x="48" y="22" font-size="7" fill="#4ade80" font-family="monospace" opacity=".8">$ ping 10.0.0.1</text>
+    <text x="48" y="30" font-size="7" fill="#94a3b8" font-family="monospace" opacity=".6">64 bytes: icmp</text>
+    <text x="48" y="38" font-size="7" fill="#4ade80" font-family="monospace" opacity=".8">$ uptime</text>
+    <text x="48" y="46" font-size="6" fill="rgba(80,200,100,.5)" font-family="monospace">▋</text>
+    <!-- signal bars -->
+    ${[0,1,2,3].map(i=>`<rect x="${w-22+i*4}" y="${45-i*6}" width="3" height="${6+i*6}" rx="1" fill="rgba(80,200,100,.${3+i*2})"/>`).join('')}
+  </svg>`;
+}
+
+function buildDesignBay(x0, x1) {
+  const w = x1-x0;
+  return `<svg width="${w}" height="70" viewBox="0 0 ${w} 70" style="position:absolute;bottom:62px;left:${x0}px">
+    <!-- canvas / easel -->
+    <line x1="${w/2-18}" y1="60" x2="${w/2}"    y2="8"  stroke="rgba(160,100,60,.5)" stroke-width="2"/>
+    <line x1="${w/2+18}" y1="60" x2="${w/2}"    y2="8"  stroke="rgba(160,100,60,.5)" stroke-width="2"/>
+    <line x1="${w/2-18}" y1="60" x2="${w/2+18}" y2="60" stroke="rgba(160,100,60,.4)" stroke-width="2"/>
+    <rect x="${w/2-16}" y="8" width="32" height="28" rx="2" fill="rgba(240,235,220,.9)" stroke="rgba(160,120,60,.5)" stroke-width="1.5"/>
+    <!-- artwork on canvas -->
+    <ellipse cx="${w/2}" cy="22" rx="10" ry="8" fill="rgba(80,160,220,.5)"/>
+    <circle  cx="${w/2-5}" cy="20" r="4" fill="rgba(220,100,60,.45)"/>
+    <rect    x="${w/2+2}" y="26" width="8" height="6" fill="rgba(60,180,100,.45)"/>
+    <!-- paint palette -->
+    <ellipse cx="${w/2+26}" cy="40" rx="12" ry="8" fill="rgba(180,160,120,.4)" stroke="rgba(160,130,80,.3)" stroke-width="1"/>
+    ${['#f87171','#fb923c','#4ade80','#60a5fa','#a78bfa'].map((pc,i)=>`<circle cx="${w/2+20+i*4.5}" cy="${38+Math.sin(i)*3}" r="2.2" fill="${pc}" opacity=".75"/>`).join('')}
+    <!-- paintbrush -->
+    <line x1="${w/2+34}" y1="22" x2="${w/2+26}" y2="38" stroke="rgba(140,100,60,.6)" stroke-width="2" stroke-linecap="round"/>
+    <ellipse cx="${w/2+35}" cy="20" rx="2" ry="4" fill="rgba(220,100,60,.7)" transform="rotate(30,${w/2+35},20)"/>
+  </svg>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// BUILD STATIC SCENE
+// ═══════════════════════════════════════════════════════════════════════
+function buildScene() {
+  const vw = window.innerWidth;
+
+  // Zone backgrounds + labels + props
+  Object.entries(ZONES).forEach(([key, z]) => {
+    const x0 = z.xFrac[0] * vw, x1 = z.xFrac[1] * vw, w = x1-x0;
+
+    // Tinted zone panel
+    const panel = document.createElement('div');
+    panel.style.cssText = `position:absolute;bottom:0;left:${x0}px;width:${w}px;
+      height:100%;background:${z.color};pointer-events:none;z-index:1;`;
+    TANK.appendChild(panel);
+
+    // Zone divider line
+    if (z.xFrac[0] > 0) {
+      const line = document.createElement('div');
+      line.style.cssText = `position:absolute;bottom:0;left:${x0}px;width:1px;
+        height:100%;background:rgba(255,255,255,.04);pointer-events:none;z-index:1;`;
+      TANK.appendChild(line);
+    }
+
+    // Zone label
+    const lbl = document.createElement('div');
+    lbl.style.cssText = `position:absolute;bottom:4px;left:${x0+6}px;
+      font-size:8px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+      color:rgba(255,255,255,.18);pointer-events:none;z-index:3;white-space:nowrap;`;
+    lbl.textContent = z.label;
+    TANK.appendChild(lbl);
+
+    // Props
+    const propHTML = z.propFn(0, w);
+    const propWrap = document.createElement('div');
+    propWrap.style.cssText = `position:absolute;bottom:0;left:${x0}px;pointer-events:none;z-index:2;`;
+    propWrap.innerHTML = propHTML;
+    TANK.appendChild(propWrap);
+  });
+
+  // Seaweed (outside zones / between)
+  const weedX = [0.14, 0.33, 0.55, 0.74, 0.92];
+  weedX.forEach((f, i) => {
+    const x = f * vw;
+    const h = 55 + Math.random()*70;
+    const col = ['#2d6a4f','#40916c','#1b4332','#52b788','#2d6a4f'][i];
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute;bottom:68px;left:${x}px;width:16px;
+      transform-origin:bottom center;animation:sway ${3.5+Math.random()*2.5}s ease-in-out ${Math.random()*3}s infinite;
+      pointer-events:none;z-index:2;`;
+    el.innerHTML = makeWeedSVG(h, col);
+    TANK.appendChild(el);
+  });
+
+  // Add sway keyframe if not present
+  if (!document.getElementById('sway-style')) {
+    const s = document.createElement('style');
+    s.id = 'sway-style';
+    s.textContent = `@keyframes sway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}`;
+    document.head.appendChild(s);
+  }
+
+  // Rocks near boundaries
+  [0.15, 0.34, 0.57, 0.75].forEach(f => {
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute;bottom:60px;left:${f*vw-18}px;pointer-events:none;z-index:2;`;
+    el.innerHTML = makeRockSVG();
+    TANK.appendChild(el);
+  });
+}
+
+function makeWeedSVG(h, col) {
+  let pts=[], x=8, sign=1;
+  for (let y=h; y>0; y-=11) { x+=sign*5; sign*=-1; pts.push(`${x},${y}`); }
+  return `<svg width="16" height="${h}"><polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function makeRockSVG() {
+  const r=16+Math.random()*12;
+  const col=['#374151','#4b5563','#1f2937','#475569'][Math.floor(Math.random()*4)];
+  return `<svg width="${r*2}" height="${r}"><ellipse cx="${r}" cy="${r*.7}" rx="${r}" ry="${r*.6}" fill="${col}"/><ellipse cx="${r*.7}" cy="${r*.42}" rx="${r*.28}" ry="${r*.18}" fill="rgba(255,255,255,.05)"/></svg>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// AMBIENT FISH
+// ═══════════════════════════════════════════════════════════════════════
+function spawnFish() {
+  const cols = ['#60a5fa','#34d399','#f472b6','#fb923c','#a78bfa','#22d3ee'];
+  const col  = cols[Math.floor(Math.random()*cols.length)];
+  const sz   = 18 + Math.random()*18;
+  const top  = 8 + Math.random()*52;
+  const dur  = 22 + Math.random()*28;
+  const flip = Math.random()>.5;
+  const el   = document.createElement('div');
+  el.className = 'fish' + (flip ? ' left' : '');
+  el.style.cssText = `top:${top}vh;animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;z-index:4;`;
+  el.innerHTML = `<svg width="${sz*2.4}" height="${sz}" viewBox="0 0 50 20">
+    <polygon points="0,10 13,0 13,20" fill="${col}" opacity=".65"/>
+    <ellipse cx="30" cy="10" rx="18" ry="8" fill="${col}" opacity=".65"/>
+    <circle cx="43" cy="8" r="2" fill="#080808"/>
+    <circle cx="42.5" cy="7.5" r=".8" fill="white"/>
+  </svg>`;
+  TANK.appendChild(el);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// BUBBLES & ZZZ
+// ═══════════════════════════════════════════════════════════════════════
+function spawnBubble(x, bottomPx) {
+  const el = document.createElement('div');
+  el.className = 'bubble';
+  const sz = 4+Math.random()*7, dur = 3+Math.random()*2.5;
+  el.style.cssText = `width:${sz}px;height:${sz}px;left:${x+(Math.random()-.5)*18}px;
+    bottom:${bottomPx}px;animation-duration:${dur}s;z-index:12;`;
+  TANK.appendChild(el);
+  setTimeout(()=>el.remove(), dur*1000);
+}
+
+function spawnZzz(x, bottomPx) {
+  const el = document.createElement('div');
+  el.className = 'zzz';
+  const dur = 3+Math.random()*1.5;
+  const chars = ['z','Z','z','💤'][Math.floor(Math.random()*4)];
+  el.style.cssText = `left:${x+(Math.random()-.5)*22}px;bottom:${bottomPx+60}px;
+    animation-duration:${dur}s;z-index:12;font-size:${11+Math.random()*5}px;`;
+  el.textContent = chars;
+  TANK.appendChild(el);
+  setTimeout(()=>el.remove(), dur*1000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SPARKLES
+// ═══════════════════════════════════════════════════════════════════════
+function spawnSparkles(x, y) {
+  const emojis=['✨','⭐','🌟','💫','🎉'];
+  for (let i=0;i<6;i++) {
+    const sp=document.createElement('div');
+    sp.className='sparkle';
+    const ang=(i/6)*Math.PI*2, dist=35+Math.random()*25;
+    sp.style.cssText=`left:${x}px;top:${y}px;z-index:50;
+      --dx:${Math.cos(ang)*dist}px;--dy:${Math.sin(ang)*dist}px;`;
+    sp.textContent=emojis[i%emojis.length];
+    document.body.appendChild(sp);
+    setTimeout(()=>sp.remove(),1350);
+  }
+}
+
+function flashGlow(bodyEl, col) {
+  bodyEl.style.filter=`drop-shadow(0 0 22px ${col}) drop-shadow(0 0 44px ${col})`;
+  setTimeout(()=>bodyEl.style.filter='',700);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CRAB MAP
+// ═══════════════════════════════════════════════════════════════════════
+const crabs = new Map();  // id → { el, data, curX, curY, targetX, targetY, lastState, lastZone, frameTimer }
+
+function createCrab(agent) {
+  const slot = getZoneSlot(agent.id, agent.zone);
+  const wrap = document.createElement('div');
+  wrap.className = 'crab-wrap';
+  wrap.dataset.id = agent.id;
+  wrap.style.cssText = `left:${slot.x}px;bottom:${slot.y}px;`;
+
+  wrap.innerHTML = `
+    <div class="tooltip">
+      <strong>${agent.session}:${agent.window} — ${agent.title}</strong>
+      <div class="tip-zone">zone: ${agent.zone} · hat: ${agent.hat}</div>
+      <span class="tip-snippet" style="color:#64748b;font-size:9px">${agent.snippet||'—'}</span>
+    </div>
+    <div class="crab-labels">
+      <div class="crab-state-badge"></div>
+      <div class="crab-action"></div>
+      <div class="workload-bar"><div class="workload-fill"></div></div>
+      <div class="todo-pips"></div>
+    </div>
+    <div class="crab-body-wrap" style="position:relative;display:inline-block;">
+      <div class="hat"></div>
+      <div class="crab-body">
+        ${makeCrabSVG(agent.color, CRAB_W)}
+      </div>
+    </div>
+    <div class="crab-name">${agent.title}</div>
+  `;
+
+  TANK.appendChild(wrap);
+
+  const entry = {
+    el: wrap,
+    data: agent,
+    curX: slot.x, curY: slot.y,
+    targetX: slot.x, targetY: slot.y,
+    lastState: agent.state,
+    lastZone: agent.zone,
+    frameTimer: 0,
+    wanderTimer: Date.now() + 3000 + Math.random()*6000,
+  };
+  crabs.set(agent.id, entry);
+  applyVisuals(entry, agent);
+  return entry;
+}
+
+function updateCrab(agent) {
+  if (!crabs.has(agent.id)) { createCrab(agent); return; }
+  const entry = crabs.get(agent.id);
+  const stateChanged = entry.lastState !== agent.state;
+  const zoneChanged  = entry.lastZone  !== agent.zone;
+
+  entry.data = agent;
+
+  // If zone changed, assign new slot target
+  if (zoneChanged) {
+    const slot = getZoneSlot(agent.id, agent.zone);
+    entry.targetX = slot.x + (Math.random()-.5)*30;
+    entry.targetY = slot.y + (Math.random()-.5)*14;
+    entry.lastZone = agent.zone;
+  }
+
+  applyVisuals(entry, agent, stateChanged);
+  entry.lastState = agent.state;
+}
+
+function applyVisuals(entry, agent, stateChanged=false) {
+  const wrap  = entry.el;
+  const color = agent.color;
+
+  // Badge
+  const badge = wrap.querySelector('.crab-state-badge');
+  badge.textContent = STATE_LABELS[agent.state] || agent.state.toUpperCase();
+  badge.style.background = color+'2a';
+  badge.style.color      = color;
+  badge.style.border     = `1px solid ${color}44`;
+
+  // Action
+  wrap.querySelector('.crab-action').textContent = agent.action;
+
+  // Name
+  wrap.querySelector('.crab-name').textContent = agent.title;
+
+  // Crab body colour + animation class
+  const bodyEl = wrap.querySelector('.crab-body');
+  bodyEl.className = 'crab-body ' + agent.state + (agent.active ? ' is-active' : '');
+  bodyEl.innerHTML = makeCrabSVG(color, CRAB_W);
+
+  // Hat
+  const hatEl = wrap.querySelector('.hat');
+  hatEl.innerHTML = makeHat(agent.hat, color);
+
+  // Workload bar — driven by cpu_pct; fallback to state heuristic
+  const fill = wrap.querySelector('.workload-fill');
+  let workPct = agent.cpu_pct || 0;
+  if (workPct < 2) {
+    workPct = {working:72, thinking:55, permission:90, waiting:20, done:100, error:85, idle:5}[agent.state] || 5;
+  }
+  fill.style.width      = workPct + '%';
+  fill.style.background = color;
+
+  // Todo pips
+  const pips = wrap.querySelector('.todo-pips');
+  pips.innerHTML = '';
+  if (agent.todo && agent.todo.total > 0) {
+    const max = Math.min(agent.todo.total, 8);
+    for (let i=0; i<max; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'todo-pip';
+      pip.style.background = i < agent.todo.done ? color : 'rgba(255,255,255,.12)';
+      pip.style.border = `1px solid ${color}44`;
+      pips.appendChild(pip);
+    }
+  }
+
+  // Tooltip snippet
+  const tip = wrap.querySelector('.tip-snippet');
+  if (tip) tip.textContent = agent.snippet || '—';
+
+  // State-change effects
+  if (stateChanged) {
+    if (agent.state==='done') {
+      const rect=wrap.getBoundingClientRect();
+      spawnSparkles(rect.left+rect.width/2, rect.top+rect.height/2);
+    }
+    if (agent.state==='permission') flashGlow(bodyEl,'#fb923c');
+    if (agent.state==='error')      flashGlow(bodyEl,'#ef4444');
+    // nudge crab slightly on state change
+    entry.targetX += (Math.random()-.5)*40;
+    entry.targetY += (Math.random()-.5)*16;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════════════════
+const LERP = 0.018;
+
+function tick() {
+  const now = Date.now();
+
+  crabs.forEach((entry) => {
+    entry.frameTimer++;
+    const { el, data } = entry;
+
+    // Lerp position
+    entry.curX += (entry.targetX - entry.curX) * LERP;
+    entry.curY += (entry.targetY - entry.curY) * LERP;
+    el.style.left   = entry.curX + 'px';
+    el.style.bottom = entry.curY + 'px';
+
+    // Flip direction
+    const bodyEl = el.querySelector('.crab-body');
+    if (bodyEl && Math.abs(entry.targetX - entry.curX) > 2) {
+      el.querySelector('.crab-body-wrap').style.transform =
+        entry.targetX < entry.curX ? 'scaleX(-1)' : 'scaleX(1)';
+    }
+
+    // Wander: idle crabs wander more gently within zone, active crabs stay near slot
+    if (now > entry.wanderTimer) {
+      const slot = getZoneSlot(data.id, data.zone);
+      const spread = data.state === 'idle' ? 50 : 28;
+      entry.targetX = slot.x + (Math.random()-.5)*spread;
+      entry.targetY = slot.y + (Math.random()-.5)*(data.state==='idle'?18:10);
+      // clamp
+      const vw = window.innerWidth;
+      entry.targetX = Math.max(34, Math.min(vw-34, entry.targetX));
+      entry.targetY = Math.max(78, Math.min(window.innerHeight*.55, entry.targetY));
+      entry.wanderTimer = now + (data.state==='idle' ? 8000 : 5000) + Math.random()*7000;
+    }
+
+    // Effects per frame
+    const bubbleRate = {working:35, thinking:70, permission:22, error:18}[data.state];
+    if (bubbleRate && entry.frameTimer % bubbleRate === 0) {
+      spawnBubble(entry.curX + CRAB_W/2, entry.curY + CRAB_W + 16);
+    }
+    if (data.state==='idle' && data.zone==='sleep' && entry.frameTimer % 120 === 0) {
+      spawnZzz(entry.curX + CRAB_W/2, entry.curY);
+    }
+  });
+
+  requestAnimationFrame(tick);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// WEBSOCKET
+// ═══════════════════════════════════════════════════════════════════════
+let ws, reconnTimer;
+
+function connect() {
+  STATUS.className='connecting'; STATUS.textContent='⬤ connecting…';
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    STATUS.className='connected'; STATUS.textContent='⬤ live';
+    clearTimeout(reconnTimer);
+  };
+
+  ws.onmessage = ({data}) => {
+    try {
+      const msg = JSON.parse(data);
+      // Adapt bridge.py format (type:'status'/'welcome', panes:[]) to aquarium format (type:'agents', agents:[])
+      let agents;
+      if (msg.type === 'agents') {
+        agents = msg.agents;
+      } else if ((msg.type === 'status' || msg.type === 'welcome') && msg.panes) {
+        // Convert bridge.py pane format to aquarium agent format
+        agents = msg.panes.map(p => ({
+          id: p.pane_id, session: 'gmux', window: p.window,
+          title: p.name, state: p.state,
+          zone: p.state === 'idle' ? 'sleep' : 'coding',
+          hat: 'hard-hat',
+          color: {waiting:'#ef4444',working:'#22c55e',permission:'#a855f7',done:'#3b82f6',idle:'#475569',error:'#ef4444'}[p.state] || '#475569',
+          action: p.last_line || '',
+          snippet: p.last_line || '',
+          active: false, cpu_pct: 0,
+          todo: { done: p.todo_done||0, total: p.todo_total||0, pct: p.todo_total > 0 ? (p.todo_done||0)/p.todo_total : 0 }
+        }));
+      } else { return; }
+
+      HUD_SUB.textContent = `${agents.length} agents in tank`;
+      if (msg.system) {
+        HUD_SYS.textContent = `sys load ${msg.system.cpu_pct}%`;
+      }
+
+      const liveIds = agents.map(a=>a.id);
+      agents.forEach(a => updateCrab(a));
+      crabs.forEach((_,id) => {
+        if (!liveIds.includes(id)) { crabs.get(id).el.remove(); crabs.delete(id); }
+      });
+    } catch(e) { console.warn('[aquarium]', e); }
+  };
+
+  ws.onerror = () => {
+    STATUS.className='error'; STATUS.textContent='⬤ no server';
+  };
+  ws.onclose = () => {
+    STATUS.className='connecting'; STATUS.textContent='⬤ reconnecting…';
+    reconnTimer = setTimeout(connect, 3000);
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// DEMO MODE
+// ═══════════════════════════════════════════════════════════════════════
+const DEMO_AGENTS = [
+  {id:'%1', session:'gmux',window:1, title:'gesture-control',               state:'working',  zone:'devops',   hat:'captain',    cpu_pct:62},
+  {id:'%2', session:'gmux',window:2, title:'doofing_phone_link',            state:'thinking', zone:'devops',   hat:'captain',    cpu_pct:41},
+  {id:'%3', session:'gmux',window:3, title:'AI_diary',                      state:'idle',     zone:'research', hat:'graduation', cpu_pct:0},
+  {id:'%4', session:'gmux',window:4, title:'claude_TUI',                    state:'waiting',  zone:'research', hat:'graduation', cpu_pct:8},
+  {id:'%5', session:'gmux',window:5, title:'gmux',                          state:'working',  zone:'coding',   hat:'hard-hat',   cpu_pct:78},
+  {id:'%6', session:'gmux',window:6, title:'smart-glasses-face-tracker',    state:'thinking', zone:'devops',   hat:'captain',    cpu_pct:55},
+  {id:'%15',session:'gmux',window:7, title:'avatar_agents',                 state:'done',     zone:'design',   hat:'beret',      cpu_pct:0},
+  {id:'%8', session:'gmux',window:8, title:'bot_loop',                      state:'working',  zone:'coding',   hat:'hard-hat',   cpu_pct:89},
+  {id:'%12',session:'gmux',window:10,title:'unity',                         state:'idle',     zone:'sleep',    hat:'nightcap',   cpu_pct:0},
+  {id:'%13',session:'gmux',window:11,title:'castle',                        state:'permission',zone:'coding',  hat:'hard-hat',   cpu_pct:44},
+];
+const ACTION_POOLS = {
+  working:['⚙️ Running tools...','🔨 Building...','📝 Writing code...','⚡ Executing...'],
+  thinking:['🤔 Thinking...','💭 Processing...','🌊 Streaming...'],
+  permission:['🚨 Needs approval!','⚠️ Permission required'],
+  waiting:['💬 Ready for input','⏳ Waiting...'],
+  done:['✅ Task complete!','🎉 Finished!'],
+  error:['❌ Error detected','🔥 Something broke'],
+  idle:['😴 Chilling...','💤 Dreaming...','🌙 Resting'],
+};
+const ALL_STATES=['working','thinking','idle','waiting','done','error','permission'];
+let demoMode=false;
+
+function startDemo() {
+  demoMode=true;
+  STATUS.className='connecting'; STATUS.textContent='⬤ demo mode';
+  HUD_SUB.textContent=`${DEMO_AGENTS.length} agents in tank`;
+  DEMO_AGENTS.forEach(a=>{
+    a.color  = STATE_COLORS[a.state];
+    a.action = ACTION_POOLS[a.state][0];
+    a.snippet=''; a.active=false; a.todo={done:0,total:0,pct:0};
+    updateCrab(a);
+  });
+  setInterval(()=>{
+    const a = DEMO_AGENTS[Math.floor(Math.random()*DEMO_AGENTS.length)];
+    a.state  = ALL_STATES[Math.floor(Math.random()*ALL_STATES.length)];
+    a.color  = STATE_COLORS[a.state];
+    a.action = ACTION_POOLS[a.state][Math.floor(Math.random()*ACTION_POOLS[a.state].length)];
+    a.cpu_pct= a.state==='idle' ? 0 : Math.floor(Math.random()*90);
+    // idle crabs go to sleep zone, active ones go to their work zone
+    if (a.state==='idle') a.zone='sleep';
+    else {
+      const workZones={working:'coding',thinking:'coding',done:'coding',
+                       permission:'coding',waiting:'research',error:'coding'};
+      a.zone = workZones[a.state] || a.zone;
+    }
+    updateCrab(a);
+  }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════════
+buildZoneSlots();
+buildScene();
+for (let i=0;i<6;i++) spawnFish();
+requestAnimationFrame(tick);
+
+setTimeout(()=>{ if (!ws||ws.readyState!==WebSocket.OPEN) if (!demoMode) startDemo(); }, 4000);
+connect();
+document.addEventListener('visibilitychange',()=>{ if (!document.hidden&&(!ws||ws.readyState>1)) connect(); });
+</script>
+</body>
+</html>

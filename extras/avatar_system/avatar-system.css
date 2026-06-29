@@ -1,0 +1,43 @@
+/* ── Agent avatar (chat panel) ──────────────────────────────────────────── */
+#cp-avatar {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:8px 0 4px; flex-shrink:0;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(0,0,0,.15) 0%, transparent 100%);
+}
+#cp-avatar-crab {
+  width:52px; height:52px;
+  display:flex; align-items:center; justify-content:center;
+  filter:drop-shadow(0 0 8px currentColor);
+  transition:filter 400ms;
+}
+#cp-avatar-badge {
+  font-size:9px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  padding:2px 7px; border-radius:10px; opacity:.9;
+  transition:all 300ms;
+}
+
+/* State-based animations on the avatar SVG root */
+#cp-avatar-crab.working  svg { animation: ava-bounce  0.7s ease-in-out infinite alternate; }
+#cp-avatar-crab.waiting  svg { animation: ava-breathe 2.5s ease-in-out infinite; }
+#cp-avatar-crab.permission svg { animation: ava-flash 0.5s ease-in-out infinite alternate; }
+#cp-avatar-crab.idle     svg { animation: ava-breathe 4s   ease-in-out infinite; opacity:.6; }
+#cp-avatar-crab.done     svg { animation: ava-spin    1s   ease-in-out 1; }
+
+@keyframes ava-bounce  { from { transform:translateY(0) scale(1) } to { transform:translateY(-6px) scale(1.05) } }
+@keyframes ava-breathe { 0%,100% { transform:scale(1) } 50% { transform:scale(1.04) } }
+@keyframes ava-flash   { from { opacity:1 } to { opacity:0.4 } }
+@keyframes ava-spin    { 0% { transform:rotate(0deg) } 50% { transform:rotate(20deg) } 100% { transform:rotate(0deg) } }
+
+/* ── Fullscreen avatar (bottom-right corner) ───────────────────────────── */
+#fs-avatar {
+  position:fixed; right:24px; bottom:24px; z-index:150;
+  display:none; flex-direction:column; align-items:center; gap:6px;
+  pointer-events:none;
+}
+#fs-avatar.visible { display:flex; }
+#fs-avatar-crab { width:80px; height:80px; filter:drop-shadow(0 0 16px currentColor); }
+#fs-avatar-label {
+  font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:rgba(255,255,255,.7); text-shadow:0 1px 4px rgba(0,0,0,.8);
+}

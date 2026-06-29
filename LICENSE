@@ -1,0 +1,58 @@
+MIT License
+
+Copyright (c) 2026 fivelidz and gmux-v4 contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+==============================================================================
+Third-party code attribution
+==============================================================================
+
+This project incorporates code and architectural patterns from the following
+projects. Each file containing lifted code carries an inline attribution
+comment identifying the source commit.
+
+----- Maestro -----
+https://github.com/its-maestro-baby/maestro
+MIT License, copyright (c) Maestro contributors.
+
+The following modules are derived from Maestro:
+  - src-tauri/src/core/process_manager.rs (PTY management)
+  - src-tauri/src/core/terminal_backend.rs (backend trait abstraction)
+  - src-tauri/src/core/session_manager.rs (session metadata)
+  - src-tauri/src/core/utf8_decoder.rs (split-byte UTF-8 handling)
+  - src-tauri/src/core/error.rs (PtyError types)
+  - src-tauri/src/core/windows_process.rs (Windows ConPTY helpers)
+  - src-tauri/src/commands/terminal.rs (Tauri command handlers)
+  - src-tauri/src/commands/usage.rs (Anthropic OAuth usage API)
+  - src/lib/pty.ts (frontend IPC wrappers; ports lib/terminal.ts)
+
+The render-batching patterns and xterm.js wiring in the frontend
+UI also derive from Maestro's src/components/terminal/TerminalView.tsx,
+adapted from React to vanilla JS.
+
+----- gmux-system (v3) -----
+https://github.com/fivelidz/gmux-system
+The v3 UI, voice daemon, gesture engine, agent monitor dashboard,
+phone bridge protocol, memory aggregator, sub-agent system, and
+provider auth panel are lifted from gmux-system v3.7.2. License terms
+of the v3 repo apply to those derived components.
+
+----- xterm.js, Tauri, portable-pty -----
+All used per their respective licenses (MIT, MIT, MIT).

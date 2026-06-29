@@ -1,0 +1,71 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Tauri / Rust — patterns cover both repo-root layout (src-tauri/) and
+# the nested-app layout (app/src-tauri/) we inherited from gmux-system v3.
+src-tauri/target/
+src-tauri/gen/
+app/src-tauri/target/
+app/src-tauri/gen/
+**/*.rs.bk
+Cargo.lock.bak
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.opencode/
+.claude/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python compiled (for sidecar scripts in Phase 4+)
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Tauri builds
+release/
+target/
+
+# OS sentinels
+/tmp/
+
+# Local-only docs / notes (use docs/ for shared)
+NOTES.md
+SCRATCH.md
+
+# Archive — keep small source snapshots in git for rollback safety, but
+# binary backups are too big and easily regeneratable from a git tag.
+# Cargo build-artifact caches (moved here for inspection in alpha.16) are
+# also large and machine-specific so they don't belong in git.
+archive/binaries/
+archive/build-artifacts/
+# Source snapshots (.tar.gz) ARE kept — small enough (~8 MB) and useful
+# for rollback / pre-flight verification.
+
+# Phone bridge is its own repo (github.com/fivelidz/gmux-phone-bridge)
+gmux_phone_bridge_system/
