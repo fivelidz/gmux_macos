@@ -1,0 +1,128 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // ─────────────────────────────────────────────────────────────────────────
+  // qalcode2 global config — PORTABLE version for a fresh machine (macOS).
+  //
+  // This is a sanitised copy of fivelidz's working config. All machine-specific
+  // MCP servers and plugin paths that pointed at /home/fivelidz/projects/... have
+  // been DISABLED (not deleted) so qalcode2 starts cleanly on a new machine.
+  // Each disabled block has a note telling you how to re-enable it if you set up
+  // that dependency.
+  //
+  // Install location for this file:  ~/.config/opencode/opencode.jsonc
+  // (qalcode2 IS an opencode fork, so it reads the opencode config dir.)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // Don't hit the network for a version check on every launch.
+  "autoupdate": false,
+
+  // ── Plugins ────────────────────────────────────────────────────────────
+  // DISABLED on a fresh machine. The original used QTK (Qalarc Token Killer),
+  // a tool-output compressor loaded from a local checkout:
+  //   "plugin": ["file:///home/fivelidz/projects/QTK/packages/qtk-plugin/src/index.ts"],
+  // To re-enable: clone https://github.com/qalarc/QTK, build it, put qtk-core on
+  // PATH, then point the plugin path at your local checkout.
+  "plugin": [],
+
+  // ── Providers ─────────────────────────────────────────────────────────────
+  // Local Ollama models (optional). Only works if you run `ollama serve`
+  // locally and have pulled these models. Harmless if Ollama isn't installed —
+  // the provider just won't be selectable. Anthropic (Claude) auth is handled
+  // by `qalcode2` itself on first run; see the install guide.
+  "provider": {
+    "ollama": {
+      "name": "Ollama (Local)",
+      "npm": "@ai-sdk/openai-compatible",
+      "api": "http://localhost:11434/v1",
+      "options": {
+        "apiKey": "ollama"
+      },
+      "models": {
+        "qwen2.5-coder:32b": { "name": "Qwen 2.5 Coder 32B", "tool_call": true, "temperature": true, "attachment": false },
+        "qwen2.5-coder:14b": { "name": "Qwen 2.5 Coder 14B", "tool_call": true, "temperature": true, "attachment": false },
+        "qwen2.5-coder:7b":  { "name": "Qwen 2.5 Coder 7B",  "tool_call": true, "temperature": true, "attachment": false }
+      }
+    }
+  },
+
+  // ── MCP servers ──────────────────────────────────────────────────────────
+  // Codex CLI mounted as a local MCP server, giving qalcode2 `codex_*` tools to
+  // delegate code work to OpenAI Codex. ENABLED only if you install the codex
+  // CLI (`brew install codex` or per https://github.com/openai/codex) and log in
+  // (`codex login`). If codex is not on PATH this block is a no-op error at
+  // startup — set "enabled": false if it bothers you.
+  "mcp": {
+    "codex": {
+      "type":    "local",
+      "command": ["codex", "mcp-server"],
+      "enabled": true,
+      "timeout": 15000
+    }
+
+    // ── DISABLED machine-specific MCP servers (from fivelidz's setup) ────────
+    // These pointed at /home/fivelidz/projects/... and won't exist on your Mac.
+    // Re-add a block here (with the right path) only if you set up that project:
+    //
+    //   "gmux-brain": local python router at ~/projects/gmux-brain/src/router.py
+    //   "diary":      AI Diary MCP at ~/projects/AI_diary/phone/diary-pwa/mcp_server.py
+    //   "bannerlord-modkit": Bannerlord modding tools (game-specific)
+    //
+    // (Left out entirely so qalcode2 starts clean.)
+  },
+
+  // ── Agent personas ───────────────────────────────────────────────────────
+  // Declutters the Tab picker (disables some compiled-in defaults) and adds two
+  // "codex delegate" agents that force all code work through the codex MCP tool.
+  // The codex-* agents only work if the codex MCP server above is connected.
+  "agent": {
+    // Hide some compiled-in defaults from the Tab picker (reversible):
+    "architect":   { "disable": true },
+    "build":       { "disable": true },
+    "coder":       { "disable": true },
+    "debugger":    { "disable": true },
+    "researcher":  { "disable": true },
+    "docs":        { "disable": true },
+
+    // ── Codex delegate agents (need the codex MCP server) ────────────────────
+    "codex-review": {
+      "description": "Code review via OpenAI Codex MCP. Opus orchestrates, codex inspects. Read-only.",
+      "mode":  "primary",
+      "model": "anthropic/claude-opus-4-7",
+      "color": "#10a37f",
+      "prompt": "You are a STRICT delegate to OpenAI Codex. You have NO authority to read, write, edit, or analyze code yourself. For ANY user request involving code (review, explanation, summary, critique, anything), you MUST call the `codex_codex` MCP tool with the user's request as the `prompt` argument and `cwd` set to the current working directory. Then return codex's response verbatim. Do NOT roleplay as a reviewer. Do NOT answer code questions from your own knowledge. Do NOT use the built-in read/grep/glob tools. If you ever find yourself about to answer without calling codex_codex, STOP and call codex_codex instead.",
+      "tools": {
+        "edit":      false,
+        "write":     false,
+        "multiedit": false,
+        "patch":     false,
+        "bash":      false,
+        "webfetch":  false,
+        "websearch": false,
+        "read":      false,
+        "grep":      false,
+        "glob":      false,
+        "ls":        false,
+        "codesearch": false
+      },
+      "permission": { "edit": "deny", "webfetch": "deny" }
+    },
+
+    "codex-edit": {
+      "description": "Code edits via OpenAI Codex MCP. Opus orchestrates, codex edits. Workspace sandbox.",
+      "mode":  "primary",
+      "model": "anthropic/claude-opus-4-7",
+      "color": "#10a37f",
+      "prompt": "You are a STRICT delegate to OpenAI Codex. You have NO authority to read, write, or edit files yourself. For ANY user request involving code, you MUST call the `codex_codex` MCP tool with the user's request as the `prompt` argument and `cwd` set to the current working directory. Then return codex's response verbatim. If codex asks for clarification, relay it. Do NOT use built-in edit/write/bash tools — they are disabled for you. If you ever find yourself about to edit a file directly, STOP and call codex_codex instead.",
+      "tools": {
+        "edit":      false,
+        "write":     false,
+        "multiedit": false,
+        "patch":     false,
+        "bash":      false,
+        "webfetch":  false,
+        "websearch": false
+      },
+      "permission": { "webfetch": "deny" }
+    }
+  }
+}

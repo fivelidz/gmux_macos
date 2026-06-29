@@ -1,0 +1,104 @@
+#!/bin/bash
+# QalCode2 - QalCode fork with voice integration  (macOS-portable launcher)
+# Default: yolo agent with Sonnet (pinned in agent.ts)
+# Use --yolo-opus for Opus.
+#
+# INSTALL: copy this file to ~/.local/bin/qalcode2 and `chmod +x` it.
+# It expects the qalcode2 source checked out at the path below — adjust if you
+# cloned it somewhere else.
+
+# ── Where you cloned the qalcode2 source ────────────────────────────────────
+# Original (Linux):  $HOME/projects/github_repos/qalcode2/packages/opencode
+# Change this to wherever you `git clone`d https://github.com/fivelidz/qalcode2
+QALCODE2_SRC="${QALCODE2_SRC:-$HOME/projects/qalcode2/packages/opencode}"
+
+WORKING_DIR="$(pwd)"
+
+# Voice daemon is optional and Linux-developed. Left unset by default on Mac.
+VOICE_DAEMON="${VOICE_DAEMON:-}"
+
+# Offline flag passthrough
+for arg in "$@"; do
+  if [ "$arg" = "--offline" ]; then
+    export OPENCODE_OFFLINE=true
+  fi
+done
+
+if [ ! -d "$QALCODE2_SRC" ]; then
+  echo "ERROR: qalcode2 source not found at: $QALCODE2_SRC"
+  echo "Clone it first:  git clone https://github.com/fivelidz/qalcode2 ~/projects/qalcode2"
+  echo "Or set QALCODE2_SRC to your checkout's packages/opencode dir."
+  exit 1
+fi
+
+case "$1" in
+  --clean-auth|clean-auth)
+    echo "Cleaning qalcode2/opencode credentials..."
+    if [ -f ~/.local/share/opencode/auth.json ]; then
+      rm -f ~/.local/share/opencode/auth.json
+      echo "Removed ~/.local/share/opencode/auth.json"
+    else
+      echo "No credentials file found."
+    fi
+    echo "Done. Run 'qalcode2' to re-authenticate."
+    exit 0
+    ;;
+  --help|-h)
+    echo "QalCode2 - QalCode + Voice Integration"
+    echo ""
+    echo "Usage: qalcode2 [options] [command]"
+    echo ""
+    echo "Modes (Tab cycles between them in the TUI):"
+    echo "  --yolo          Autonomous mode with Sonnet (DEFAULT)"
+    echo "  --yolo-opus     Autonomous mode with Opus"
+    echo "  --yolo-extreme  EXTREME mode - ALL permissions allowed"
+    echo "  --build         Default coding assistant - asks for confirmations"
+    echo "  --plan          Read-only planning mode - cannot edit files"
+    echo "  --coder         Claude Code style assistant"
+    echo ""
+    echo "Options:"
+    echo "  --offline       Use cached plugins, skip network operations"
+    echo ""
+    echo "Special:"
+    echo "  --clean-auth    Remove cached Anthropic OAuth credentials"
+    echo "  --version       Show version"
+    exit 0
+    ;;
+  --version)
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts --version
+    ;;
+  --yolo)
+    shift; export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent yolo "$@"
+    ;;
+  --yolo-opus)
+    shift; export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent yolo-opus "$@"
+    ;;
+  --yolo-extreme)
+    shift
+    echo "WARNING: YOLO EXTREME mode — ALL permissions ALLOWED. NO safety restrictions."
+    export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent yolo-extreme "$@"
+    ;;
+  --build)
+    shift; export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent build "$@"
+    ;;
+  --plan)
+    shift; export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent plan "$@"
+    ;;
+  --coder)
+    shift; export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent coder "$@"
+    ;;
+  run)
+    shift; export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" run "$@"
+    ;;
+  *)
+    export PWD="$WORKING_DIR"
+    exec bun run --cwd "$QALCODE2_SRC" --conditions=browser src/index.ts "$WORKING_DIR" --agent yolo "$@"
+    ;;
+esac
