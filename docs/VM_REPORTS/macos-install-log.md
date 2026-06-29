@@ -165,5 +165,120 @@ npm run tauri build  # vite build -> cargo release build (slow, many crates)
 - Build kicked off: vite frontend build first, then the long cargo compile.
 - (Result recorded in §4 once the compile finishes.)
 
-<!-- §4 build outcome appended after compile -->
+### Phase 2 build — the esbuild platform-binary trap (IMPORTANT)
+The first `npm run tauri build` **failed in the vite step**, before cargo:
+```
+Error: The package "@esbuild/darwin-x64" could not be found, and is needed by esbuild.
+```
+Root cause: the repo ships a `package-lock.json` generated on **Linux**, which
+pinned the Linux-only `@esbuild/linux-x64` / `@rollup/*-linux-*` optional binaries.
+On macOS those are the wrong platform, and `node_modules/@esbuild/` came out empty.
+
+**Fix that worked:**
+```bash
+cd app
+cp package-lock.json /tmp/package-lock.linux.json   # archive, don't delete
+rm -rf node_modules package-lock.json
+npm install                                         # re-resolves darwin optional deps
+# esbuild's per-platform pkg is a transitive dep; if still missing, pin it:
+npm install @esbuild/darwin-x64@<exact-esbuild-version> --save-dev
+```
+Also hit an **npm cache permission error** (`EACCES ~/.npm/_cacache`) from an
+earlier `sudo npm` — fixed with `sudo chown -R $(whoami):staff ~/.npm`.
+
+**Lesson #7:** A committed Linux `package-lock.json` breaks `npm install` on macOS
+for any tool with per-platform native binaries (esbuild, rollup, rolldown, swc).
+Either (a) `.gitignore` the lockfile, (b) commit a platform-agnostic lock, or
+(c) document "delete lock + reinstall on a new OS". The bundler here is **rolldown**
+(vite 8) — its `@rolldown/binding-darwin-x64` installed fine on the clean reinstall;
+only esbuild's transitive binary needed pinning.
+
+After this, `npm run tauri build` ran vite cleanly (`✓ built`) and proceeded to
+the long cargo release compile (~400 crates).
+
+---
+
+## 4. The "showing demo agents instead of the real backend" bug (FIXED)
+
+**Symptom:** gmux displayed the built-in demo/sample agents instead of the real
+(empty) backend state.
+
+**Root cause (in both `app/src/index.html` and `ui/v3/index.html`):**
+`initDataSource()` seeds the pane map from `MOCK_PANES` as a loading placeholder,
+then replaces it with real data. But `applyRealState()` had:
+```js
+const realIds = Object.keys(real);
+if (realIds.length === 0) return;   // <-- bails out, KEEPING the mock seed
+```
+So when the monitor backend is reachable but **idle** (returns `{}` — which is the
+normal state until an AI agent actively touches files), the empty-guard returned
+early and the demo agents stayed on screen forever.
+
+**Fix (committed `95412eb`):**
+- Tag each seeded pane with `_mockSeed = true`.
+- Set `window._gmuxBackendConnected = true` the instant a real backend answers
+  (Tauri `invoke` reachable, or HTTP `/api/state` returns ok).
+- In `applyRealState`, if the backend is connected **and** returns empty, drop the
+  `_mockSeed` panes so the UI shows the genuine "waiting for agents" state.
+- Cross-platform safe (pure JS, no OS-specific code); applied to both UIs.
+
+**Lesson #8:** "Demo data won't go away" on a fresh deploy is usually a
+*loading-placeholder that never gets cleared* because the real backend is idle
+(empty), not unreachable. Distinguish "no backend yet" (keep placeholder) from
+"backend connected but idle" (clear placeholder).
+
+---
+
+## 5. Companion tools (terminal workflow) — Ghostty + qalcode2
+
+This is the **daily-driver coding setup** and is independent of the gmux app.
+
+### qalcode (the OpenCode fork) — got it working without brew
+- bun 1.3.14 already installed at `~/.bun/bin/bun`.
+- Source already cloned to `~/projects/claude-coding/qalcode/packages/opencode`
+  with deps installed; launcher at `~/.local/bin/qalcode`.
+- **Missing dep: ripgrep (`rg`).** Normally `brew install ripgrep`, but brew was
+  broken — installed brew-free via **`cargo install ripgrep`** (~2m compile,
+  lands in `~/.cargo/bin/rg`). Added `~/.cargo/bin` to `~/.zshrc` PATH.
+- **PATH gotcha:** `bun`'s PATH line lives in `~/.zshrc` (interactive shells only),
+  not `~/.zprofile` (login shells). The qalcode launcher calls bare `bun`, so it
+  failed under non-interactive shells. **Hardened the launcher** to prepend
+  `$HOME/.bun/bin` and `$HOME/.cargo/bin` to PATH itself, so it now runs
+  self-sufficiently regardless of shell type.
+- Auth: 0 credentials — needs an **interactive Claude login by the human** (the
+  one manual step). Everything else is automated.
+
+**Lesson #9:** On macOS, `~/.zshrc` is for *interactive* shells and `~/.zprofile`
+for *login* shells. Tools launched via scripts/`env -i`/SSH may not get `.zshrc`
+PATH. Make launchers self-contained (absolute paths or self-prepend PATH) rather
+than trusting the inherited environment.
+
+**Lesson #10:** Homebrew being broken is not fatal for a dev setup — `rg`, and most
+CLIs, can be installed via `cargo install` / direct download. Don't block the whole
+install on a brew repair.
+
+### Ghostty
+- Already installed at `/Applications/Ghostty.app` (GPU terminal).
+- Added `~/.config/ghostty/config` with `working-directory =` set to the projects
+  folder so new terminals open there. (Wrote via `scp` — heredocs over nested SSH
+  quoting are error-prone; prefer scp'ing a file.)
+
+---
+
+## 6. Summary — what works, what's pending
+
+**Working now (no brew needed):**
+- Remote access (Tailscale SSH, passwordless, persistent).
+- gmux **Phase 1** backend + browser UI (`:8769` verified).
+- **qalcode** terminal AI coder (self-sufficient launcher; needs 1× Claude login).
+- **Ghostty** terminal, opens in `~/projects`.
+- Demo-agent bug **fixed** in both UIs.
+
+**Pending / needs the human:**
+- gmux **Phase 2** Tauri `.app` — cargo release compile in progress.
+- **Filesystem repair** (Recovery-Mode First Aid) — see `FOR_ASHLEYS_CLAUDE.md`.
+- **qalcode Claude login** — interactive, one time.
+- **Tailscale key-expiry disable** — web console (fivelidz).
+- **Finder sidebar/Dock GUI shortcut** for `~/projects` — needs logged-in Finder.
+
 
