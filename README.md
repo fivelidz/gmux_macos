@@ -6,8 +6,9 @@
 > here → [`MACOS_AGENT_SETUP.md`](MACOS_AGENT_SETUP.md).**
 > Full patch list and rationale: [`docs/MACOS_PORTING.md`](docs/MACOS_PORTING.md).
 >
-> **Companion tools** (Ghostty terminal + qalcode2 AI CLI + fivelidz's settings),
-> each with its own agent install guide → [`tooling/`](tooling/README.md).
+> **Companion tools** (Ghostty terminal + qalcode AI CLI + QTK plugin +
+> fivelidz's settings), each with its own agent install guide →
+> [`tooling/`](tooling/README.md). All referenced repos are public.
 
 ---
 

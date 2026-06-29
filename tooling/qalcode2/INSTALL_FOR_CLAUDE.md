@@ -1,93 +1,97 @@
-# Installing qalcode2 on macOS — Instructions for a Claude Agent
+# Installing qalcode (QalCode) on macOS — Instructions for a Claude Agent
 
-> **You are a Claude coding agent.** Your job is to install **qalcode2** on this
-> macOS machine and apply the bundled settings. Read this whole file first, then
-> work top-to-bottom. Stop and ask the human at the two ⚠️ points (auth, and any
-> destructive step).
-
----
-
-## What qalcode2 is
-
-`qalcode2` is fivelidz's personal fork of **[opencode](https://github.com/sst/opencode)**
-— a terminal-based AI coding agent. It runs on **[Bun](https://bun.sh)** (not Node)
-and adds custom agent "modes" (`yolo`, `yolo-opus`, `yolo-extreme`, `build`,
-`plan`, `coder`), voice integration, and a safety layer where the agent **never
-hard-deletes files** (every `rm` is archived to `~/.qalcode-archive` for manual
-deletion instead).
-
-- **Source repo:** https://github.com/fivelidz/qalcode2
-- It is launched by a small bash wrapper (`qalcode2`) that calls
-  `bun run … src/index.ts` with the chosen agent mode.
+> **You are a Claude coding agent.** Install **qalcode** (fivelidz's OpenCode
+> fork) on this macOS machine, optionally add the **QTK** plugin, and apply the
+> bundled settings. Read this whole file first, then work top-to-bottom. Stop and
+> ask the human at the ⚠️ points (authentication, anything destructive).
 
 ---
 
-## Step 1 — Prerequisites
+## What qalcode is
+
+`qalcode` is fivelidz's public fork of **[OpenCode](https://github.com/sst/opencode)**
+— a terminal AI coding agent. It runs **from source via [Bun](https://bun.sh)**
+(no global npm install, works on non-AVX CPUs) and adds a full agent roster
+(autonomous "yolo" agents, local Ollama agents, planning mode), push-to-talk
+voice, a live usage/rate-limit panel, and sensible permission defaults including
+a safety layer where the agent **never hard-deletes** — every `rm` is archived
+for manual deletion instead.
+
+- **Public repo (use this one):** https://github.com/fivelidz/qalcode-share
+- **Optional plugin — QTK (token compressor):** https://github.com/qalarc/QTK
+- Upstream it's forked from: https://github.com/sst/opencode
+
+> The repo's own `README.md` documents an Arch/CachyOS `pacman` installer. On
+> **macOS** you use the exact same installer with the **`--skip-deps`** flag and
+> install Bun yourself first (steps below).
+
+---
+
+## Step 1 — Prerequisites (macOS)
 
 ```bash
-# Bun (the runtime qalcode2 needs):
+# Bun — the runtime qalcode needs:
 curl -fsSL https://bun.sh/install | bash
-# restart your shell or: source ~/.zshrc
+# restart shell, or: source ~/.zshrc
 
-# git, if not present:
-brew install git
-
-# (Optional) codex CLI — only if you want the codex-edit / codex-review agents:
-#   the bundled settings reference an OpenAI Codex MCP server.
-#   Install per https://github.com/openai/codex and run `codex login`.
-#   If you skip this, set "enabled": false on the "codex" block in opencode.jsonc
-#   (or just ignore the startup warning).
-
-# (Optional) Ollama — only if you want local models:
-#   https://ollama.com  → then `ollama pull qwen2.5-coder:7b`
+# git + ripgrep + fzf (the Linux installer normally pulls these via pacman;
+# on macOS install them with brew so --skip-deps has everything it needs):
+brew install git ripgrep fzf
 ```
 
-✅ **Checkpoint:** `bun --version` succeeds.
+✅ **Checkpoint:** `bun --version`, `git --version`, `rg --version` all succeed.
 
 ---
 
-## Step 2 — Clone and build qalcode2
+## Step 2 — Clone and run the installer (with --skip-deps)
 
 ```bash
-mkdir -p ~/projects
-git clone https://github.com/fivelidz/qalcode2 ~/projects/qalcode2
-cd ~/projects/qalcode2
-bun install        # installs all workspace deps (may take a few minutes)
+git clone https://github.com/fivelidz/qalcode-share.git ~/qalcode
+cd ~/qalcode
+
+# --skip-deps tells the installer NOT to use pacman (it's not on macOS).
+# It runs `bun install` and drops a `qalcode` launcher into ~/.local/bin.
+bash install.sh --skip-deps
 ```
 
-The runnable entrypoint is `~/projects/qalcode2/packages/opencode/src/index.ts`.
-
-✅ **Checkpoint:** `bun install` finishes with no fatal errors.
-
----
-
-## Step 3 — Install the launcher wrapper
-
-A macOS-portable launcher is bundled next to this file: **`qalcode2`** (in this
-same `tooling/qalcode2/` folder).
+Then make sure `~/.local/bin` is on PATH (macOS default shell is zsh):
 
 ```bash
-mkdir -p ~/.local/bin
-cp <gmux_macos>/tooling/qalcode2/qalcode2 ~/.local/bin/qalcode2
-chmod +x ~/.local/bin/qalcode2
-
-# Make sure ~/.local/bin is on PATH (zsh):
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
+which qalcode        # should print ~/.local/bin/qalcode
 ```
 
-The wrapper expects the source at `~/projects/qalcode2/packages/opencode`. If you
-cloned elsewhere, either edit the `QALCODE2_SRC=` line at the top of the wrapper
-or export `QALCODE2_SRC` in your shell.
+> **Note on the launcher name:** the public installer creates a launcher called
+> **`qalcode`** (not `qalcode2`). They are the same tool — `qalcode2` was just
+> fivelidz's local alias for a newer checkout. Use `qalcode` on this machine.
+> A reference macOS launcher (`qalcode2`) is also bundled in this folder if you
+> ever want the multi-mode wrapper, but the installer's `qalcode` is the simplest
+> path — prefer it.
 
-✅ **Checkpoint:** `which qalcode2` resolves to `~/.local/bin/qalcode2`.
+✅ **Checkpoint:** `which qalcode` resolves under `~/.local/bin`.
+
+---
+
+## Step 3 — (Optional) install the QTK plugin
+
+QTK silently compresses tool outputs (`git status`, `ls`, `rg`, `pytest`,
+`Read`/`Grep`/`Glob`, …) before they reach the model — big token savings, no LLM,
+zero workflow change. **Optional.** Skip it on the first pass if you want qalcode
+running fast; add it later.
+
+See the companion guide: [`../qtk/INSTALL_FOR_CLAUDE.md`](../qtk/INSTALL_FOR_CLAUDE.md)
+
+If you install QTK, enable it in the settings file (Step 4) by setting the
+`"plugin"` array to point at your QTK checkout (the settings file has a commented
+example).
 
 ---
 
 ## Step 4 — Apply the bundled settings
 
-The settings live in `tooling/qalcode2/settings/` in this repo. They go in the
-opencode config dir (qalcode2 reuses opencode's config location):
+Settings live in `tooling/qalcode2/settings/` in this repo. qalcode reuses
+OpenCode's config dir:
 
 ```bash
 mkdir -p ~/.config/opencode
@@ -103,13 +107,14 @@ cp <gmux_macos>/tooling/qalcode2/settings/config.json    ~/.config/opencode/conf
 **About these settings (already sanitised for a fresh machine):**
 - `autoupdate: false` — no version check on launch.
 - Ollama local-model provider (harmless if Ollama isn't installed).
-- Codex MCP server **enabled** — needs the codex CLI (Step 1). If you don't have
-  it, set `"enabled": false` on the `codex` block, or ignore the warning.
+- Codex MCP server — needs the codex CLI; set `"enabled": false` if you don't
+  install it, or ignore the startup warning.
 - Two `codex-*` delegate agents (only work with the codex MCP server).
-- The original machine-specific MCP servers (`diary`, `gmux-brain`,
-  `bannerlord-modkit`) and the QTK plugin were **removed/disabled** because they
-  pointed at the original author's local paths. Notes in the file explain how to
-  re-enable each if you ever set them up.
+- `"plugin": []` — QTK is **off by default**. To enable it after Step 3, set:
+  `"plugin": ["file:///Users/<you>/qtk/packages/qtk-plugin/src/index.ts"]`
+  (the file has this example as a comment).
+- The author's machine-specific MCP servers (`diary`, `gmux-brain`,
+  `bannerlord-modkit`) were removed because they pointed at his local paths.
 
 ✅ **Checkpoint:** `~/.config/opencode/opencode.jsonc` exists.
 
@@ -119,30 +124,21 @@ cp <gmux_macos>/tooling/qalcode2/settings/config.json    ~/.config/opencode/conf
 
 ```bash
 cd ~/some-project
-qalcode2 --help          # confirm the wrapper works
-qalcode2                 # launches the TUI in yolo (Sonnet) mode
+qalcode
 ```
 
-On first launch qalcode2 needs to authenticate to Anthropic (Claude). **This is
-an interactive login — stop and let the human do it.** It typically opens a
-browser OAuth flow, or you paste an API key, depending on their account.
-See `AUTHENTICATION-SETUP.md` / `CLAUDE-AUTHENTICATION.md` in the qalcode2 repo
-for the exact flow.
-
-If auth ever gets stuck: `qalcode2 --clean-auth` then relaunch.
+First launch needs Anthropic (Claude) authentication — **interactive login, let
+the human do it** (browser OAuth or API key, depending on their account). The
+repo's `README.md` / `docs/` cover the exact flow. If auth gets stuck, there's a
+`--clean-auth`-style reset documented in the repo.
 
 ✅ **Checkpoint:** the human confirms the TUI launches and Claude responds.
 
 ---
 
-## Notes / gotchas
+## Modes / notes
 
-- **macOS, not Linux:** the original wrapper had a Linux voice daemon path; the
-  bundled wrapper leaves voice disabled by default (`VOICE_DAEMON` empty). Voice
-  is optional and Linux-developed — skip it unless asked.
-- **Safety layer:** this fork archives deletions instead of `rm`-ing them
-  (`~/.qalcode-archive`). That's intended behaviour, not a bug.
-- **Modes:** `qalcode2 --yolo` (default, autonomous), `--build` (asks before
-  changes), `--plan` (read-only). Tab cycles modes inside the TUI.
-- For deeper config/build docs, read the qalcode2 repo's own `README.md`,
-  `BUILD-AND-DEPLOY.md`, and `TROUBLESHOOTING.md`.
+- `qalcode` launches the TUI; **Tab** cycles agent modes (yolo / build / plan / …).
+- **Safety layer:** deletions are archived, not `rm`-ed — intended behaviour.
+- For deeper docs read the repo's `README.md`, `AGENTS.md`, `docs/`, and
+  `STYLE_GUIDE.md`.

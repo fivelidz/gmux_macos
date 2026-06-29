@@ -17,11 +17,12 @@
   "autoupdate": false,
 
   // ── Plugins ────────────────────────────────────────────────────────────
-  // DISABLED on a fresh machine. The original used QTK (Qalarc Token Killer),
-  // a tool-output compressor loaded from a local checkout:
-  //   "plugin": ["file:///home/fivelidz/projects/QTK/packages/qtk-plugin/src/index.ts"],
-  // To re-enable: clone https://github.com/qalarc/QTK, build it, put qtk-core on
-  // PATH, then point the plugin path at your local checkout.
+  // QTK (Qalarc Token Killer) — compresses noisy tool outputs before they reach
+  // the model. OFF by default here. To enable, install it and switch to:
+  //   "plugin": ["@qalarc/qtk-plugin"]
+  // Install:  cd ~/qalcode/packages/opencode && bun add @qalarc/qtk-plugin
+  // Repo/npm: https://github.com/qalarc/QTK  ·  package @qalarc/qtk-plugin
+  // Full guide: tooling/qtk/INSTALL_FOR_CLAUDE.md
   "plugin": [],
 
   // ── Providers ─────────────────────────────────────────────────────────────
