@@ -20,7 +20,15 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
+# Resolve this script's real path WITHOUT realpath (not present on stock macOS).
+# Follow symlinks manually so `gmux` works when linked into ~/.local/bin.
+_src="${BASH_SOURCE[0]:-$0}"
+while [ -h "$_src" ]; do
+  _dir="$(cd -P "$(dirname "$_src")" && pwd)"
+  _src="$(readlink "$_src")"
+  case "$_src" in /*) ;; *) _src="$_dir/$_src" ;; esac
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$_src")" && pwd)"
 SYSTEM_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Pick an available python3 — PREFER one that already has psutil (the backend's
