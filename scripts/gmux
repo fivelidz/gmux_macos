@@ -77,8 +77,15 @@ case "${1:-}" in
     ;;
 
   attach)
-    # Drop into the gmux tmux session
-    tmux attach -t gmux 2>/dev/null || tmux new-session -s gmux
+    # Drop into the gmux tmux session — auto-open in the user's projects folder.
+    # Prefer ~/Code (the SSH-accessible, findable code home), then common fallbacks.
+    PROJECTS_DIR=""
+    for _d in "$HOME/Code" "$HOME/projects" "$HOME/Projects" "$HOME/Documents/projects"; do
+      if [ -d "$_d" ]; then PROJECTS_DIR="$_d"; break; fi
+    done
+    [ -n "$PROJECTS_DIR" ] || PROJECTS_DIR="$HOME"
+    tmux attach -t gmux 2>/dev/null \
+      || tmux new-session -s gmux -c "$PROJECTS_DIR"
     ;;
 
   status)
