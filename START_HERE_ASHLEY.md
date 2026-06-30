@@ -5,30 +5,32 @@ anything by trying.
 
 ---
 
-## 🟣 1. Open iTerm (your terminal)
+## 🟣 1. Open WezTerm (your terminal)
 
-**iTerm** is a window where you type commands. Think of it like a chat box for
+**WezTerm** is a window where you type commands. Think of it like a chat box for
 your computer.
 
-- Press **Cmd (⌘) + Space**, type **`iTerm`**, press **Return**.
-- A window opens where you can type. 🎉
+- Press **Cmd (⌘) + Space**, type **`WezTerm`**, press **Return**.
+- A dark window opens **already inside your Code folder.** 🎉
 
-That's it. iTerm is just the window everything else lives in.
+That's it. WezTerm is just the window everything else lives in. It's fast and
+light — good for this Mac.
 
-> *(We tried "Ghostty" first but it needs a newer macOS than this Mac has, so we
-> use iTerm instead — it does the exact same job.)*
+> *(We tried Ghostty and iTerm first. Ghostty needs a newer macOS, and iTerm had
+> a memory problem on this Mac — WezTerm is the stable, light choice.)*
 
 ---
 
 ## 📁 2. Your projects live in one folder
 
-All your coding work goes in **one place**:
+All your coding work goes in **one place**, a folder called **`Code`** in your
+home folder (you'll see it in Finder, and in the Finder sidebar):
 
 ```
-/Users/ashleychapman-davies/projects
+/Users/ashleychapman-davies/Code
 ```
 
-Inside Ghostty, you can jump there any time by typing:
+Inside WezTerm, you can jump there any time by typing:
 
 ```
 proj
@@ -59,7 +61,7 @@ proj
 ## 🤖 3. Talk to the AI coder (qalcode)
 
 **qalcode** is your AI helper that can write and change code by talking to it —
-exactly like talking to me right now, but inside Ghostty.
+exactly like talking to me right now, but inside WezTerm.
 
 ### To start it:
 1. First go into the project you want to work on (see step 2). For example:
@@ -89,7 +91,7 @@ The AI will think, then do it. You watch it work.
 ### Handy keys while it's open
 - **Tab** — switches the AI's "mode" (e.g. careful planning vs. just-do-it).
 - **Type `/help`** — shows what else you can do.
-- To **quit**, press **Esc** a couple of times, or close the iTerm tab.
+- To **quit**, press **Esc** a couple of times, or close the WezTerm tab.
 
 > 💡 You always **pick the folder first** (step 2), **then** run `qalcode`. The AI
 > only works inside the folder you started it in. That keeps things tidy and safe.
@@ -131,7 +133,7 @@ gmux status
 ```
 …and it prints each AI helper and what it's up to.
 
-> 🧠 Think of it like this: **iTerm** is one window. **gmux attach** turns it into
+> 🧠 Think of it like this: **WezTerm** is one window. **gmux attach** turns it into
 > several windows side-by-side, each able to run its own AI. **gmux status** is the
 > bird's-eye view.
 
@@ -143,7 +145,7 @@ Come back any time with `gmux attach`.
 ## ✅ The whole thing in 4 lines
 
 ```
-1. Open iTerm              (Cmd+Space → "iTerm")
+1. Open WezTerm              (Cmd+Space → "WezTerm")
 2. proj                    (go to your projects)
 3. cd some-project-name    (go into one)
 4. qalcode                 (start talking to the AI)
@@ -156,7 +158,7 @@ That's it. You're coding. 🚀
 ---
 
 ### If something looks stuck
-- Close the iTerm window and open a fresh one.
+- Close the WezTerm window and open a fresh one.
 - Type `proj` to get back home.
 - If qalcode won't start, type `qalcode --help` to check it's there.
 - Still stuck? fivelidz can see your Mac remotely and help.
