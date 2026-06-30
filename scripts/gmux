@@ -23,12 +23,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "$0")")" && pwd)"
 SYSTEM_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Pick an available python3 (backend is stdlib + psutil; ANY 3.10+ works).
-# macOS often has only `python3` (e.g. 3.14), not `python3.11`.
+# Pick an available python3 — PREFER one that already has psutil (the backend's
+# only non-stdlib dep), to dodge the macOS PEP-668 pip wall. macOS often has only
+# `python3` (e.g. 3.14), not `python3.11`.
 PY=""
-for _c in python3.11 python3.12 python3.13 python3.10 python3; do
-  if command -v "$_c" >/dev/null 2>&1; then PY="$_c"; break; fi
+for _c in python3.11 python3.12 python3.13 python3.14 python3.10 python3; do
+  if command -v "$_c" >/dev/null 2>&1 && "$_c" -c "import psutil" >/dev/null 2>&1; then PY="$_c"; break; fi
 done
+if [ -z "$PY" ]; then
+  for _c in python3.11 python3.12 python3.13 python3.14 python3.10 python3; do
+    if command -v "$_c" >/dev/null 2>&1; then PY="$_c"; break; fi
+  done
+fi
 [ -n "$PY" ] || { echo "  ✗ no python3 found in PATH"; exit 1; }
 
 # setsid is Linux-only; on macOS just background normally.

@@ -27,11 +27,17 @@ port_in_use() {
 
 # ── Python picker ─────────────────────────────────────────────────────────────
 # macOS often ships only `python3` (e.g. 3.14), not `python3.11`. The backend is
-# stdlib + psutil, so any 3.10+ works.
+# stdlib + psutil, so any 3.10+ works — PREFER one that already has psutil so we
+# dodge the macOS PEP-668 pip wall on the system python.
 PY=""
-for _c in python3.11 python3.12 python3.13 python3.10 python3; do
-  if command -v "$_c" >/dev/null 2>&1; then PY="$_c"; break; fi
+for _c in python3.11 python3.12 python3.13 python3.14 python3.10 python3; do
+  if command -v "$_c" >/dev/null 2>&1 && "$_c" -c "import psutil" >/dev/null 2>&1; then PY="$_c"; break; fi
 done
+if [ -z "$PY" ]; then
+  for _c in python3.11 python3.12 python3.13 python3.14 python3.10 python3; do
+    if command -v "$_c" >/dev/null 2>&1; then PY="$_c"; break; fi
+  done
+fi
 [ -n "$PY" ] || { echo "  ✗ no python3 found in PATH"; exit 1; }
 
 echo ""

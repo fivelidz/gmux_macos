@@ -42,10 +42,17 @@ esac; done
 # ── helpers ──────────────────────────────────────────────────────────────────
 have() { command -v "$1" >/dev/null 2>&1; }
 
-# Pick the best python3 (the backend wants 3.10+, prefers 3.11 but ANY 3.x with
-# psutil works — the monitor is stdlib + psutil only).
+# Pick the best python3. The monitor is stdlib + psutil only, so we PREFER an
+# interpreter that already has psutil importable (avoids the macOS PEP-668
+# "externally-managed" pip wall on the system python). Falls back to any python3.
 pick_python() {
-  for c in python3.11 python3.12 python3.13 python3.10 python3; do
+  local c
+  # First pass: an interpreter that already has psutil
+  for c in python3.11 python3.12 python3.13 python3.14 python3.10 python3; do
+    if have "$c" && "$c" -c "import psutil" >/dev/null 2>&1; then echo "$c"; return 0; fi
+  done
+  # Second pass: any python3 (psutil may be installable, or metrics show 0)
+  for c in python3.11 python3.12 python3.13 python3.14 python3.10 python3; do
     if have "$c"; then echo "$c"; return 0; fi
   done
   return 1
@@ -90,11 +97,14 @@ $MODE_CHECK && { step "Check-only mode — done."; exit 0; }
 # ── 2. INSTALL GAPS (brew-free where possible) ─────────────────────────────────
 step "Filling gaps"
 
-# psutil — install with pip into the chosen python's user site
+# psutil — install with pip into the chosen python's user site.
+# macOS Homebrew pythons are PEP-668 "externally managed"; --user is blocked.
+# Try --user first, then --break-system-packages (safe for a leaf dep like psutil).
 if ! $HAVE_PSUTIL && [ -n "$PY" ]; then
   warn "installing psutil via $PY -m pip"
-  $PY -m pip install --user psutil >/tmp/gmux-pip.log 2>&1 \
-    && ok "psutil installed" || warn "psutil install failed (see /tmp/gmux-pip.log) — metrics will show 0"
+  if $PY -m pip install --user psutil >/tmp/gmux-pip.log 2>&1; then ok "psutil installed (--user)"
+  elif $PY -m pip install --user --break-system-packages psutil >>/tmp/gmux-pip.log 2>&1; then ok "psutil installed (--break-system-packages)"
+  else warn "psutil install failed (see /tmp/gmux-pip.log) — metrics will show 0. Tip: brew install python@3.11 and re-run."; fi
 fi
 
 # ripgrep — prefer brew, else cargo install (brew-free)
