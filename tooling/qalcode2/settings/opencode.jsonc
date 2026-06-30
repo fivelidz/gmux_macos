@@ -16,6 +16,10 @@
   // Don't hit the network for a version check on every launch.
   "autoupdate": false,
 
+  // Dark TUI theme. Press <leader>t inside qalcode to switch live.
+  // Other good dark options: dracula, catppuccin, nord, one-dark, gruvbox.
+  "theme": "tokyonight",
+
   // ── Plugins ────────────────────────────────────────────────────────────
   // QTK (Qalarc Token Killer) — compresses noisy tool outputs before they reach
   // the model. OFF by default here. To enable, install it and switch to:
