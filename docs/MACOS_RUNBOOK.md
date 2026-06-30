@@ -32,8 +32,10 @@ present, installs only the gaps, and avoids every trap below.
 | 6 | **Broken Homebrew blocks everything** | `brew --version` errors | NOT a blocker — install `rg` via `cargo install`, python via system; brew only needed to *acquire* missing deps |
 | 7 | **Mac goes offline (sleep)** | Tailscale "offline, last seen Nm ago"; SSH times out | run `scripts/macos-keepalive.sh` on the Mac |
 | 8 | **Demo agents won't clear** | UI shows sample agents on a fresh deploy | fixed in code: mock seed clears once backend connects (commit 95412eb) |
-| 9 | **APFS corruption masquerading as a brew bug** | `git checkout`/`touch` fail to create *specific* files in a writable dir | run `sudo diskutil verifyVolume /`; if it fails → Recovery-Mode First Aid |
+| 9 | **APFS corruption masquerading as a brew bug** | `git checkout`/`touch` fail to create *specific* files in a writable dir | run `sudo diskutil verifyVolume /`; if it fails → Recovery-Mode First Aid. **If brew dir is corrupt:** archive it (`sudo mv /usr/local/Homebrew /usr/local/Homebrew.broken`), `git clone https://github.com/Homebrew/brew /usr/local/Homebrew`, relink `/usr/local/bin/brew`. Cellar packages survive. |
 | 10 | **Heredocs over nested SSH quoting** | mangled config files | `scp` a file instead of heredoc-over-ssh |
+| 11 | **Ghostty requires macOS 13+** | `dyld: Library not loaded: AppIntents.framework` — Ghostty won't launch on Monterey (12) | Ghostty ≥1.x needs Ventura. On macOS 12 use **iTerm2** (`brew install --cask iterm2`) or **Terminal.app**. Check `LSMinimumSystemVersion` in the app's Info.plist. |
+| 12 | **brew on macOS 12 is "Tier 3"** | source-builds (cmake, tmux) are slow (15-20 min) and easy to mistake for hung; spawning a 2nd `brew install` hits a lock | run ONE install, detached, and leave it. `ps aux | grep clang` confirms it's compiling. |
 
 ---
 

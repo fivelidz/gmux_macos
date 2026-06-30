@@ -5,15 +5,18 @@ anything by trying.
 
 ---
 
-## 🟣 1. Open Ghostty (your terminal)
+## 🟣 1. Open iTerm (your terminal)
 
-**Ghostty** is a window where you type commands. Think of it like a chat box for
+**iTerm** is a window where you type commands. Think of it like a chat box for
 your computer.
 
-- Press **Cmd (⌘) + Space**, type **`Ghostty`**, press **Return**.
-- A dark window opens. **It already starts inside your `projects` folder.** 🎉
+- Press **Cmd (⌘) + Space**, type **`iTerm`**, press **Return**.
+- A window opens where you can type. 🎉
 
-That's it. Ghostty is just the window everything else lives in.
+That's it. iTerm is just the window everything else lives in.
+
+> *(We tried "Ghostty" first but it needs a newer macOS than this Mac has, so we
+> use iTerm instead — it does the exact same job.)*
 
 ---
 
@@ -86,7 +89,7 @@ The AI will think, then do it. You watch it work.
 ### Handy keys while it's open
 - **Tab** — switches the AI's "mode" (e.g. careful planning vs. just-do-it).
 - **Type `/help`** — shows what else you can do.
-- To **quit**, press **Esc** a couple of times, or close the Ghostty tab.
+- To **quit**, press **Esc** a couple of times, or close the iTerm tab.
 
 > 💡 You always **pick the folder first** (step 2), **then** run `qalcode`. The AI
 > only works inside the folder you started it in. That keeps things tidy and safe.
@@ -107,22 +110,40 @@ remembers.** Talk to it like a colleague who takes notes.
 
 ---
 
-## 🖥️ 5. gmux (the fancy dashboard) — *optional, later*
+## 🖥️ 5. gmux — run several AIs at once and watch them
 
-**gmux** is a bigger app with a visual dashboard that shows what your AI helpers
-are doing — like a control room. **You don't need it to start coding.** Steps 1–4
-above are everything you need for real work today.
+**gmux** lets you run **more than one AI helper at the same time** and see what
+each one is doing — like a control room. It works right in the terminal.
 
-We're still finishing gmux for your Mac. When it's ready, you'll open it like any
-app (Cmd+Space → type `gmux`). Until then, **just use Ghostty + qalcode** — that's
-a complete, working coding system.
+You don't need this to start. But when you want it:
+
+```
+gmux attach
+```
+This opens a **split-screen workspace** (called tmux). Inside it:
+- **Ctrl-a then "** — splits the screen so you can run a *second* qalcode
+- **Ctrl-a then arrow keys** — move between the splits
+- **the mouse works too** — click a split to focus it, scroll to read history
+
+To see a quick list of what's running, in a normal terminal type:
+```
+gmux status
+```
+…and it prints each AI helper and what it's up to.
+
+> 🧠 Think of it like this: **iTerm** is one window. **gmux attach** turns it into
+> several windows side-by-side, each able to run its own AI. **gmux status** is the
+> bird's-eye view.
+
+To leave the split-screen without closing it: **Ctrl-a then d** ("detach").
+Come back any time with `gmux attach`.
 
 ---
 
 ## ✅ The whole thing in 4 lines
 
 ```
-1. Open Ghostty            (Cmd+Space → "Ghostty")
+1. Open iTerm              (Cmd+Space → "iTerm")
 2. proj                    (go to your projects)
 3. cd some-project-name    (go into one)
 4. qalcode                 (start talking to the AI)
@@ -130,10 +151,21 @@ a complete, working coding system.
 
 That's it. You're coding. 🚀
 
+**Want multiple AIs at once?**  →  `gmux attach`  (then `Ctrl-a "` to split)
+
 ---
 
 ### If something looks stuck
-- Close the Ghostty window and open a fresh one.
+- Close the iTerm window and open a fresh one.
 - Type `proj` to get back home.
 - If qalcode won't start, type `qalcode --help` to check it's there.
 - Still stuck? fivelidz can see your Mac remotely and help.
+
+---
+
+### 🔑 First-time setup (do this once)
+The very first time you run `qalcode`, it asks you to **log in to Claude**:
+1. Type `qalcode` and press Return.
+2. It shows a login screen — choose **Anthropic / Claude** and follow the prompt
+   (it opens a web page to sign in, or asks for an API key).
+3. Once you're logged in, it remembers you forever. You won't see this again.
