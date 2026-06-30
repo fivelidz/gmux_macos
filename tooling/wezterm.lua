@@ -30,9 +30,27 @@ config.audible_bell = 'Disabled'
 
 -- ── Sensible keys ───────────────────────────────────────────────────────────
 config.keys = {
-  -- Cmd+T new tab in the same dir, Cmd+D split, etc. (WezTerm defaults are good)
-  { key = 'd', mods = 'CMD', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' } },
-  { key = 'D', mods = 'CMD|SHIFT', action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' } },
+  -- Splits (like panes): Cmd+D side-by-side, Cmd+Shift+D stacked
+  { key = 'd', mods = 'CMD',       action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+  { key = 'd', mods = 'CMD|SHIFT', action = wezterm.action.SplitVertical   { domain = 'CurrentPaneDomain' } },
+  -- Move between splits with Cmd+arrow
+  { key = 'LeftArrow',  mods = 'CMD', action = wezterm.action.ActivatePaneDirection 'Left' },
+  { key = 'RightArrow', mods = 'CMD', action = wezterm.action.ActivatePaneDirection 'Right' },
+  { key = 'UpArrow',    mods = 'CMD', action = wezterm.action.ActivatePaneDirection 'Up' },
+  { key = 'DownArrow',  mods = 'CMD', action = wezterm.action.ActivatePaneDirection 'Down' },
+  -- Cmd+G: open a fresh tab and launch the gmux multiplexer view
+  { key = 'g', mods = 'CMD', action = wezterm.action.SpawnCommandInNewTab {
+      args = { '/bin/zsh', '-lc', 'gmux attach || gmux status; exec zsh' },
+      cwd  = wezterm.home_dir .. '/Code',
+  }},
+  -- Cmd+R: open a fresh tab running qalcode in the Code folder
+  { key = 'r', mods = 'CMD', action = wezterm.action.SpawnCommandInNewTab {
+      args = { '/bin/zsh', '-lc', 'cd ~/Code && qalcode; exec zsh' },
+      cwd  = wezterm.home_dir .. '/Code',
+  }},
 }
+
+-- New tabs/windows open in the Code folder too
+config.default_cwd = wezterm.home_dir .. '/Code'
 
 return config
